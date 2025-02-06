@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum ProposalStatus {
+  DRAFT
+  SENT
+  REJECTED
+  BLOCKED
+  ACCEPTED
+  EXPIRED
+}
+
+// Users (both senders and recipients)
+model User {
+  id             String         @id @default(uuid())
+  email          String         @unique
+  phone          String?        @unique
+  hashedPassword String?        // For email/password login
+  name           String
+  OAuthId        String?        // For OAuth providers
+  emailVerified  DateTime?      // For OAuth/email verification
+  role           Role           @default(USER) // e.g., "ADMIN"
+  image          String?        // Profile picture URL
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  // Relationships
+  proposals      Proposal[]     @relation("ProposalSender")
+  blockedUsers   BlockedUser[]  @relation("BlockedByUser")
+  blockedUser    BlockedUser[]  @relation("BlockedUser")
+  sessions       Session[]
+  auditLogs      AuditLog[]
+  sentMessage Message[] @relation("CreatedBy")
+  receivedMessage Message[] @relation("SentTo")
+  accounts      Account[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  // Indexes for faster queries
+  @@index([email])
+  @@index([phone])
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([provider, providerAccountId])
+}
+
+// Proposals (requests sent to recipients)
+model Proposal {
+  id              String        @id @default(uuid())
+  senderId        String        // ID of the user sending the proposal
+  sender          User          @relation("ProposalSender", fields: [senderId], references: [id])
+  recipientName   String?       // Encrypted field (see notes below)
+  recipientEmail  String?       // Encrypted field (see notes below)
+  recipientPhone  String?       // Encrypted field
+  recipientHash   String        // SHA-256 hash of email/phone for spam checks
+  message         String        // AI-generated proposal content
+  customMessage   String?       // User-modified message
+  image           String?       // Proposal image
+  link            String?       // Proposal link
+  status          ProposalStatus        @default(DRAFT) // PENDING_CONSENT, VIEWED, ACCEPTED, REJECTED, EXPIRED
+  deliveryMethod  String        // WHATSAPP, SMS, EMAIL, INSTAGRAM, etc.
+  channel         String?       // e.g., "WhatsApp", "Email"
+  consentSentAt   DateTime?     // Time when consent request was sent
+  expiresAt       DateTime      // Proposal expires in 7 days
+  createdAt       DateTime      @default(now())
+  messages        Message[]     @relation("ProposalMessages")
+
+  // Recipient's response (if any)
+
+  // Indexes for faster lookups
+  @@index([recipientHash])
+  @@index([status])
+  @@index([expiresAt])
+  
+}
+
+// Recipient's response to a proposal
+model Message {
+  id              String        @id @default(uuid())
+  proposalId      String        @unique
+  proposal        Proposal      @relation("ProposalMessages", fields: [proposalId], references: [id])
+  answer          String        // ACCEPTED, REJECTED, BLOCKED
+  message         String?       // Recipient's optional reply
+  reportedHarassment Boolean    @default(false)
+  consentGiven    Boolean       @default(false) // Did recipient consent to view?
+  respondedAt     DateTime      @default(now())
+
+  createdById   String
+  createdBy     User          @relation("CreatedBy", fields: [createdById], references: [id])
+  sentToUserId  String
+  sentTo        User          @relation("SentTo", fields: [sentToUserId], references: [id])
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([proposalId])
+  @@index([reportedHarassment])
+  @@index([consentGiven])
+}
+
+// Track blocked users (to prevent harassment)
+model BlockedUser {
+  id              String        @id @default(uuid())
+  blockerId       String        // User who blocked someone
+  blocker         User          @relation("BlockedByUser", fields: [blockerId], references: [id])
+  blockedUserId   String        // User who was blocked
+  blockedUser     User          @relation("BlockedUser", fields: [blockedUserId], references: [id])
+  createdAt       DateTime      @default(now())
+
+  @@unique([blockerId, blockedUserId]) // Prevent duplicate blocks
+}
+
+enum AuditAction {
+  PROPOSAL_SENT
+  RESPONSE_RECEIVED
+  PROPOSAL_VIEWED
+  PROPOSAL_ACCEPTED
+  PROPOSAL_REJECTED
+  PROPOSAL_EXPIRED
+}
+
+// Audit logs for security (track user actions)
+model AuditLog {
+  id              String        @id @default(uuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  action          AuditAction   @default(PROPOSAL_SENT)
+  details         Json?         // Additional metadata (IP, device)
+  createdAt       DateTime      @default(now())
+}
+
+// Authentication sessions (for NextAuth)
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@id([identifier, token])
+}
+ 
+ // Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@id([userId, credentialID])
+}
