@@ -1,19 +1,16 @@
-"use client"
+"use client";
 
-import { useSession, signOut } from "next-auth/react"
-import Link from "next/link"
-import { Button } from "./ui/button"
-import { 
-  Heart, 
-  User, 
-  LayoutDashboard, 
-  LogOut, 
-  LogIn, 
-  HelpCircle, 
-  Settings, 
-  StarIcon
-} from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
+import {
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  Settings,
+  User,
+} from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,13 +18,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
+} from "./ui/dropdown-menu";
 
 export function Navbar() {
-  const { data: session } = useSession()
+  const { data: session } = useSession();
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur-md shadow-sm">
+    <nav className="sticky top-0 z-50 border-b bg-white/20 backdrop-blur-md shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
@@ -35,24 +32,24 @@ export function Navbar() {
             href="/"
             className="flex items-center space-x-2 text-xl font-bold text-rose-600 hover:text-rose-700 transition-colors"
           >
-            <Heart className="w-6 h-6" />
-            <span>proposal.me</span>
+            {/* <Heart className="w-6 h-6" /> */}
+            <span>myproposal.❤️</span>
           </Link>
 
           {/* Navigation Links */}
           <div className="hidden md:flex space-x-6 items-center">
-            <Link 
-              href="/about" 
+            <Link
+              href="/about"
               className="text-gray-600 hover:text-rose-600 transition-colors flex items-center space-x-1"
             >
-              <HelpCircle className="w-4 h-4 mr-1" />
+              {/* <HelpCircle className="w-4 h-4 mr-1" /> */}
               About
             </Link>
-            <Link 
-              href="/features" 
+            <Link
+              href="/features"
               className="text-gray-600 hover:text-rose-600 transition-colors flex items-center space-x-1"
             >
-              <StarIcon className="w-4 h-4 mr-1" />
+              {/* <StarIcon className="w-4 h-4 mr-1" /> */}
               Features
             </Link>
           </div>
@@ -64,8 +61,8 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 focus:outline-none">
                     <Avatar className="w-8 h-8 border-2 border-rose-100">
-                      <AvatarImage 
-                        src={session.user.image || undefined} 
+                      <AvatarImage
+                        src={session.user.image || undefined}
                         alt={session.user.name || "User Profile"}
                       />
                       <AvatarFallback>
@@ -81,20 +78,26 @@ export function Navbar() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer flex items-center">
+                    <Link
+                      href="/dashboard"
+                      className="cursor-pointer flex items-center"
+                    >
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer flex items-center">
+                    <Link
+                      href="/settings"
+                      className="cursor-pointer flex items-center"
+                    >
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onSelect={() => signOut({ callbackUrl: '/' })} 
+                  <DropdownMenuItem
+                    onSelect={() => signOut({ callbackUrl: "/" })}
                     className="cursor-pointer flex items-center text-red-600"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -114,5 +117,5 @@ export function Navbar() {
         </div>
       </div>
     </nav>
-  )
+  );
 }

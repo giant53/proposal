@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function PrivacyPage() {
   return (
@@ -21,9 +21,10 @@ export default function PrivacyPage() {
                 Our Commitment to Privacy
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                At proposal.me, we understand that your proposals are deeply personal and meaningful. 
-                We are committed to protecting your privacy and ensuring that your romantic moments 
-                remain secure and confidential.
+                At myproposal.❤️, we understand that your proposals are deeply
+                personal and meaningful. We are committed to protecting your
+                privacy and ensuring that your romantic moments remain secure
+                and confidential.
               </p>
             </section>
 
@@ -49,8 +50,13 @@ export default function PrivacyPage() {
                     <div className="h-6 w-6 text-rose-500">🔒</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">End-to-End Encryption</h3>
-                    <p className="mt-2 text-gray-600">Your proposals are encrypted from the moment you create them until they&apos;re viewed by your intended recipient.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      End-to-End Encryption
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Your proposals are encrypted from the moment you create
+                      them until they&apos;re viewed by your intended recipient.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -58,8 +64,13 @@ export default function PrivacyPage() {
                     <div className="h-6 w-6 text-rose-500">⚡️</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Secure Infrastructure</h3>
-                    <p className="mt-2 text-gray-600">We use industry-leading security measures and regular audits to protect your data.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Secure Infrastructure
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      We use industry-leading security measures and regular
+                      audits to protect your data.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -67,8 +78,14 @@ export default function PrivacyPage() {
                     <div className="h-6 w-6 text-rose-500">📝</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Data Retention</h3>
-                    <p className="mt-2 text-gray-600">You control your data. Delete your proposals at any time, and we&apos;ll remove them from our servers within 30 days.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Data Retention
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      You control your data. Delete your proposals at any time,
+                      and we&apos;ll remove them from our servers within 30
+                      days.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -91,7 +108,8 @@ export default function PrivacyPage() {
                 Contact Us
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                If you have any questions about our privacy practices, please contact our Data Protection Officer at privacy@proposal.me
+                If you have any questions about our privacy practices, please
+                contact our Data Protection Officer at privacy@myproposal.love
               </p>
             </section>
           </div>
@@ -109,5 +127,5 @@ export default function PrivacyPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

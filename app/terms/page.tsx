@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function TermsPage() {
   return (
@@ -18,12 +18,13 @@ export default function TermsPage() {
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-16 space-y-8">
             <section>
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                Welcome to proposal.me
+                Welcome to myproposal.love (or myproposal.❤️)
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                By using our service, you agree to these terms. We&apos;ve created these terms to ensure 
-                a safe, respectful, and romantic environment for all users while protecting privacy 
-                and maintaining legal compliance.
+                By using our service, you agree to these terms. We&apos;ve
+                created these terms to ensure a safe, respectful, and romantic
+                environment for all users while protecting privacy and
+                maintaining legal compliance.
               </p>
             </section>
 
@@ -37,8 +38,13 @@ export default function TermsPage() {
                     <div className="h-6 w-6 text-rose-500">💌</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Proposal Creation</h3>
-                    <p className="mt-2 text-gray-600">Create genuine, heartfelt proposals. We reserve the right to remove inappropriate or harmful content.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Proposal Creation
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Create genuine, heartfelt proposals. We reserve the right
+                      to remove inappropriate or harmful content.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -46,8 +52,13 @@ export default function TermsPage() {
                     <div className="h-6 w-6 text-rose-500">🤝</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Consent</h3>
-                    <p className="mt-2 text-gray-600">Ensure you have the recipient&apos;s consent before sending proposals. Respect boundaries and privacy.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Consent
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Ensure you have the recipient&apos;s consent before
+                      sending proposals. Respect boundaries and privacy.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -55,8 +66,13 @@ export default function TermsPage() {
                     <div className="h-6 w-6 text-rose-500">⚖️</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Legal Compliance</h3>
-                    <p className="mt-2 text-gray-600">Follow all applicable laws and regulations. We comply with data protection standards worldwide.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Legal Compliance
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Follow all applicable laws and regulations. We comply with
+                      data protection standards worldwide.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -94,8 +110,9 @@ export default function TermsPage() {
                 Updates to Terms
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                We may update these terms to reflect service improvements or legal requirements. 
-                We&apos;ll notify you of significant changes via email.
+                We may update these terms to reflect service improvements or
+                legal requirements. We&apos;ll notify you of significant changes
+                via email.
               </p>
             </section>
           </div>
@@ -113,5 +130,5 @@ export default function TermsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

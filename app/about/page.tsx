@@ -1,6 +1,6 @@
-import { Button } from "@/components/ui/button"
-import Image from "next/image"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
@@ -27,7 +27,7 @@ export default function AboutPage() {
             </div>
             <div className="space-y-6">
               <h2 className="text-3xl font-semibold text-gray-800">
-                Why Choose proposal.me?
+                Why Choose myproposal.❤️?
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
@@ -35,8 +35,13 @@ export default function AboutPage() {
                     <div className="h-6 w-6 text-rose-500">❤️</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">AI-Powered Romance</h3>
-                    <p className="mt-2 text-gray-600">Our AI helps craft the perfect proposal while keeping your unique voice and emotions.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      AI-Powered Romance
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Our AI helps craft the perfect proposal while keeping your
+                      unique voice and emotions.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -44,8 +49,13 @@ export default function AboutPage() {
                     <div className="h-6 w-6 text-rose-500">🔒</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Privacy First</h3>
-                    <p className="mt-2 text-gray-600">Your love story is precious. We ensure it stays private with end-to-end encryption.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Privacy First
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Your love story is precious. We ensure it stays private
+                      with end-to-end encryption.
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -53,8 +63,13 @@ export default function AboutPage() {
                     <div className="h-6 w-6 text-rose-500">✨</div>
                   </div>
                   <div className="ml-3">
-                    <h3 className="text-xl font-medium text-gray-900">Beautiful Experience</h3>
-                    <p className="mt-2 text-gray-600">Create stunning proposals with our beautiful templates and customization options.</p>
+                    <h3 className="text-xl font-medium text-gray-900">
+                      Beautiful Experience
+                    </h3>
+                    <p className="mt-2 text-gray-600">
+                      Create stunning proposals with our beautiful templates and
+                      customization options.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -68,18 +83,33 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-4xl mb-4">🌹</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Authenticity</h3>
-                <p className="text-gray-600">Your proposals remain genuine and heartfelt, enhanced by AI but true to your emotions.</p>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Authenticity
+                </h3>
+                <p className="text-gray-600">
+                  Your proposals remain genuine and heartfelt, enhanced by AI
+                  but true to your emotions.
+                </p>
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-4">🛡️</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Security</h3>
-                <p className="text-gray-600">Industry-leading security measures protect your personal information and proposals.</p>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Security
+                </h3>
+                <p className="text-gray-600">
+                  Industry-leading security measures protect your personal
+                  information and proposals.
+                </p>
               </div>
               <div className="text-center">
                 <div className="text-4xl mb-4">💝</div>
-                <h3 className="text-xl font-medium text-gray-900 mb-2">Support</h3>
-                <p className="text-gray-600">24/7 support to help you create the perfect proposal for your special someone.</p>
+                <h3 className="text-xl font-medium text-gray-900 mb-2">
+                  Support
+                </h3>
+                <p className="text-gray-600">
+                  24/7 support to help you create the perfect proposal for your
+                  special someone.
+                </p>
               </div>
             </div>
           </div>
@@ -100,5 +130,5 @@ export default function AboutPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

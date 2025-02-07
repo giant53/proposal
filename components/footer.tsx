@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Heart, Twitter, Instagram, Facebook, Linkedin } from "lucide-react"
+import { FaHeart, FaTwitter, FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa6";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -11,38 +11,41 @@ export function Footer() {
           {/* Logo and Tagline */}
           <div className="col-span-1">
             <div className="flex items-center space-x-2 mb-4">
-              <Heart className="w-8 h-8 text-rose-500" />
-              <span className="text-2xl font-bold text-rose-600">proposal.me</span>
+              {/* <FaHeart className="w-8 h-8 text-rose-500" /> */}
+              <span className="text-2xl font-bold text-rose-600">
+                myproposal.❤️
+              </span>
             </div>
             <p className="text-gray-600 mb-4">
-              Transform your love story into an unforgettable moment with AI-powered proposal crafting.
+              Transform your love story into an unforgettable moment with
+              AI-powered proposal crafting.
             </p>
-            
+
             {/* Social Media Links */}
             <div className="flex space-x-4">
-              <Link 
-                href="#" 
+              <Link
+                href="#"
                 className="text-rose-400 hover:text-rose-600 transition-colors"
               >
-                <Twitter className="w-6 h-6" />
+                <FaTwitter className="w-6 h-6" />
               </Link>
-              <Link 
-                href="#" 
+              <Link
+                href="#"
                 className="text-rose-400 hover:text-rose-600 transition-colors"
               >
-                <Instagram className="w-6 h-6" />
+                <FaInstagram className="w-6 h-6" />
               </Link>
-              <Link 
-                href="#" 
+              <Link
+                href="#"
                 className="text-rose-400 hover:text-rose-600 transition-colors"
               >
-                <Facebook className="w-6 h-6" />
+                <FaFacebook className="w-6 h-6" />
               </Link>
-              <Link 
-                href="#" 
+              <Link
+                href="#"
                 className="text-rose-400 hover:text-rose-600 transition-colors"
               >
-                <Linkedin className="w-6 h-6" />
+                <FaLinkedin className="w-6 h-6" />
               </Link>
             </div>
           </div>
@@ -52,24 +55,24 @@ export function Footer() {
             <h4 className="font-semibold text-gray-800 mb-4">Product</h4>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  href="/features" 
+                <Link
+                  href="/features"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Features
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/pricing" 
+                <Link
+                  href="/pricing"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/demo" 
+                <Link
+                  href="/demo"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Demo
@@ -83,24 +86,24 @@ export function Footer() {
             <h4 className="font-semibold text-gray-800 mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  href="/about" 
+                <Link
+                  href="/about"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/careers" 
+                <Link
+                  href="/careers"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Careers
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/contact" 
+                <Link
+                  href="/contact"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Contact
@@ -114,16 +117,16 @@ export function Footer() {
             <h4 className="font-semibold text-gray-800 mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link 
-                  href="/terms" 
+                <Link
+                  href="/terms"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link 
-                  href="/privacy" 
+                <Link
+                  href="/privacy"
                   className="text-gray-600 hover:text-rose-600 transition-colors"
                 >
                   Privacy Policy
@@ -136,10 +139,10 @@ export function Footer() {
         {/* Copyright */}
         <div className="mt-12 pt-8 border-t border-rose-100 text-center">
           <p className="text-gray-600">
-            © {new Date().getFullYear()} proposal.me. All rights reserved.
+            {new Date().getFullYear()} myproposal.love. All rights reserved.
           </p>
         </div>
       </div>
     </footer>
-  )
+  );
 }
