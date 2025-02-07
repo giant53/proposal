@@ -21,6 +21,19 @@ enum ProposalStatus {
   EXPIRED
 }
 
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PAST_DUE
+}
+
 // Users (both senders and recipients)
 model User {
   id             String         @id @default(uuid())
@@ -35,21 +48,37 @@ model User {
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 
+  // Subscription related fields
+  subscriptionTier    SubscriptionTier    @default(FREE)
+  subscriptionStatus  SubscriptionStatus? // Only for PREMIUM users
+  subscriptionId      String?             // External subscription ID (e.g., Stripe)
+  currentPeriodStart  DateTime?           // Subscription period start
+  currentPeriodEnd    DateTime?           // Subscription period end
+  cancelAtPeriodEnd   Boolean?            // Whether to cancel at period end
+  remainingCredits    Int                 @default(1)  // Monthly proposal credits
+  lastCreditReset     DateTime            @default(now()) // Last time credits were reset
+
+  // Payment related
+  customerId         String?              // External customer ID (e.g., Stripe)
+  defaultPaymentId   String?              // Default payment method
+
   // Relationships
-  proposals      Proposal[]     @relation("ProposalSender")
-  blockedUsers   BlockedUser[]  @relation("BlockedByUser")
-  blockedUser    BlockedUser[]  @relation("BlockedUser")
-  sessions       Session[]
-  auditLogs      AuditLog[]
-  sentMessage Message[] @relation("CreatedBy")
-  receivedMessage Message[] @relation("SentTo")
-  accounts      Account[]
-  // Optional for WebAuthn support
-  Authenticator Authenticator[]
+  proposals          Proposal[]           @relation("ProposalSender")
+  blockedUsers       BlockedUser[]        @relation("BlockedByUser")
+  blockedUser        BlockedUser[]        @relation("BlockedUser")
+  sessions           Session[]
+  auditLogs          AuditLog[]
+  sentMessage        Message[]            @relation("CreatedBy")
+  receivedMessage    Message[]            @relation("SentTo")
+  accounts           Account[]
+  transactions       Transaction[]
+  Authenticator      Authenticator[]
 
   // Indexes for faster queries
   @@index([email])
   @@index([phone])
+  @@index([subscriptionTier])
+  @@index([subscriptionStatus])
 }
 
 model Account {
@@ -75,51 +104,88 @@ model Account {
 
 // Proposals (requests sent to recipients)
 model Proposal {
-  id              String        @id @default(uuid())
-  senderId        String        // ID of the user sending the proposal
-  sender          User          @relation("ProposalSender", fields: [senderId], references: [id])
-  recipientName   String?       // Encrypted field (see notes below)
-  recipientEmail  String?       // Encrypted field (see notes below)
-  recipientPhone  String?       // Encrypted field
-  recipientHash   String        // SHA-256 hash of email/phone for spam checks
-  message         String        // AI-generated proposal content
-  customMessage   String?       // User-modified message
-  image           String?       // Proposal image
-  link            String?       // Proposal link
-  status          ProposalStatus        @default(DRAFT) // PENDING_CONSENT, VIEWED, ACCEPTED, REJECTED, EXPIRED
-  deliveryMethod  String        // WHATSAPP, SMS, EMAIL, INSTAGRAM, etc.
-  channel         String?       // e.g., "WhatsApp", "Email"
-  consentSentAt   DateTime?     // Time when consent request was sent
-  expiresAt       DateTime      // Proposal expires in 7 days
-  createdAt       DateTime      @default(now())
-  messages        Message[]     @relation("ProposalMessages")
-
-  // Recipient's response (if any)
+  id              String          @id @default(uuid())
+  senderId        String          // ID of the user sending the proposal
+  sender          User            @relation("ProposalSender", fields: [senderId], references: [id])
+  recipientName   String?         // Encrypted field
+  recipientEmail  String?         // Encrypted field
+  recipientPhone  String?         // Encrypted field
+  recipientHash   String          // SHA-256 hash of email/phone for spam checks
+  message         String          // AI-generated proposal content
+  customMessage   String?         // User-modified message
+  image           String?         // Proposal image
+  link            String?         // Proposal link
+  status          ProposalStatus  @default(DRAFT)
+  deliveryMethod  String          // WHATSAPP, SMS, EMAIL, INSTAGRAM, etc.
+  channel         String?         // e.g., "WhatsApp", "Email"
+  consentSentAt   DateTime?       // Time when consent request was sent
+  expiresAt       DateTime        // Proposal expires in 7 days
+  createdAt       DateTime        @default(now())
+  messages        Message[]       @relation("ProposalMessages")
+  aiModel         String          // The AI model used to generate the proposal
+  creditCost      Int             @default(1) // Number of credits consumed
 
   // Indexes for faster lookups
   @@index([recipientHash])
   @@index([status])
   @@index([expiresAt])
-  
+}
+
+// Track payment transactions
+model Transaction {
+  id              String    @id @default(uuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id])
+  amount          Float
+  currency        String    @default("USD")
+  status          String    // success, failed, pending
+  paymentMethod   String    // credit_card, paypal, etc.
+  paymentIntentId String?   // External payment intent ID
+  tier            SubscriptionTier
+  createdAt       DateTime  @default(now())
+  metadata        Json?     // Additional transaction data
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Subscription Plans Configuration (for admin use)
+model SubscriptionPlan {
+  id              String    @id @default(uuid())
+  tier            SubscriptionTier @unique
+  name            String
+  description     String
+  price           Float
+  currency        String    @default("USD")
+  interval        String    // monthly, yearly, lifetime
+  credits         Int       // Monthly proposal credits
+  features        Json      // Array of features included
+  isActive        Boolean   @default(true)
+  stripePriceId   String?   // External price ID
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([tier])
+  @@index([isActive])
 }
 
 // Recipient's response to a proposal
 model Message {
-  id              String        @id @default(uuid())
-  proposalId      String        @unique
-  proposal        Proposal      @relation("ProposalMessages", fields: [proposalId], references: [id])
-  answer          String        // ACCEPTED, REJECTED, BLOCKED
-  content         String?       // Recipient's optional reply
-  reportedHarassment Boolean    @default(false)
-  consentGiven    Boolean       @default(false) // Did recipient consent to view?
-  respondedAt     DateTime      @default(now())
+  id                 String    @id @default(uuid())
+  proposalId         String    @unique
+  proposal           Proposal  @relation("ProposalMessages", fields: [proposalId], references: [id])
+  answer             String    // ACCEPTED, REJECTED, BLOCKED
+  content            String?   // Recipient's optional reply
+  reportedHarassment Boolean   @default(false)
+  consentGiven       Boolean   @default(false)
+  respondedAt        DateTime  @default(now())
 
-  senderId   String
-  sender     User          @relation("CreatedBy", fields: [senderId], references: [id])
-  recipientId  String
-  recipient     User          @relation("SentTo", fields: [recipientId], references: [id])
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  senderId          String
+  sender            User      @relation("CreatedBy", fields: [senderId], references: [id])
+  recipientId       String
+  recipient         User      @relation("SentTo", fields: [recipientId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([proposalId])
   @@index([reportedHarassment])
@@ -128,14 +194,14 @@ model Message {
 
 // Track blocked users (to prevent harassment)
 model BlockedUser {
-  id              String        @id @default(uuid())
-  blockerId       String        // User who blocked someone
-  blocker         User          @relation("BlockedByUser", fields: [blockerId], references: [id])
-  blockedUserId   String        // User who was blocked
-  blockedUser     User          @relation("BlockedUser", fields: [blockedUserId], references: [id])
-  createdAt       DateTime      @default(now())
+  id              String    @id @default(uuid())
+  blockerId       String    // User who blocked someone
+  blocker         User      @relation("BlockedByUser", fields: [blockerId], references: [id])
+  blockedUserId   String    // User who was blocked
+  blockedUser     User      @relation("BlockedUser", fields: [blockedUserId], references: [id])
+  createdAt       DateTime  @default(now())
 
-  @@unique([blockerId, blockedUserId]) // Prevent duplicate blocks
+  @@unique([blockerId, blockedUserId])
 }
 
 enum AuditAction {
@@ -145,27 +211,31 @@ enum AuditAction {
   PROPOSAL_ACCEPTED
   PROPOSAL_REJECTED
   PROPOSAL_EXPIRED
+  SUBSCRIPTION_CREATED
+  SUBSCRIPTION_UPDATED
+  SUBSCRIPTION_CANCELLED
+  CREDITS_RESET
+  PAYMENT_RECEIVED
 }
 
 // Audit logs for security (track user actions)
 model AuditLog {
-  id              String        @id @default(uuid())
+  id              String      @id @default(uuid())
   userId          String
-  user            User          @relation(fields: [userId], references: [id])
-  action          AuditAction   @default(PROPOSAL_SENT)
-  details         Json?         // Additional metadata (IP, device)
-  createdAt       DateTime      @default(now())
+  user            User        @relation(fields: [userId], references: [id])
+  action          AuditAction @default(PROPOSAL_SENT)
+  details         Json?       // Additional metadata (IP, device)
+  createdAt       DateTime    @default(now())
 }
 
 // Authentication sessions (for NextAuth)
 model Session {
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sessionToken   String    @unique
+  userId         String
+  expires        DateTime
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
  
 model VerificationToken {
@@ -176,13 +246,13 @@ model VerificationToken {
   @@id([identifier, token])
 }
  
- // Optional for WebAuthn support
+// Optional for WebAuthn support
 model Authenticator {
-  credentialID         String  @unique
+  credentialID         String   @unique
   userId               String
   providerAccountId    String
   credentialPublicKey  String
-  counter              Int
+  counter             Int
   credentialDeviceType String
   credentialBackedUp   Boolean
   transports           String?
