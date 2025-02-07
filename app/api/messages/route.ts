@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
         proposalId,
         senderId: session.user.id,
         recipientId: proposal.recipientHash, // In a real app, this would be the actual recipient's user ID
+        answer: ''
       },
     })
 

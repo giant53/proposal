@@ -109,15 +109,15 @@ model Message {
   proposalId      String        @unique
   proposal        Proposal      @relation("ProposalMessages", fields: [proposalId], references: [id])
   answer          String        // ACCEPTED, REJECTED, BLOCKED
-  message         String?       // Recipient's optional reply
+  content         String?       // Recipient's optional reply
   reportedHarassment Boolean    @default(false)
   consentGiven    Boolean       @default(false) // Did recipient consent to view?
   respondedAt     DateTime      @default(now())
 
-  createdById   String
-  createdBy     User          @relation("CreatedBy", fields: [createdById], references: [id])
-  sentToUserId  String
-  sentTo        User          @relation("SentTo", fields: [sentToUserId], references: [id])
+  senderId   String
+  sender     User          @relation("CreatedBy", fields: [senderId], references: [id])
+  recipientId  String
+  recipient     User          @relation("SentTo", fields: [recipientId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 

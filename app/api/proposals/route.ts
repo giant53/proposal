@@ -3,6 +3,7 @@ import { prisma } from "@/prisma"
 import { successResponse, errorResponse } from "@/lib/api-response"
 import { NextRequest } from "next/server"
 import OpenAI from "openai"
+import { ProposalStatus } from "@prisma/client"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -70,7 +71,7 @@ export async function GET(req: NextRequest) {
     }
 
     const searchParams = req.nextUrl.searchParams
-    const status = searchParams.get("status")
+    const status = searchParams.get("status") as ProposalStatus
     const page = parseInt(searchParams.get("page") || "1")
     const limit = parseInt(searchParams.get("limit") || "10")
     const skip = (page - 1) * limit

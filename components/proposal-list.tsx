@@ -1,3 +1,6 @@
+"use client";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useProposals } from "@/hooks/use-proposals"
 import { Button } from "@/components/ui/button"
 import { formatDistanceToNow } from "date-fns"
@@ -16,7 +19,7 @@ export function ProposalList() {
 
   return (
     <div className="space-y-4">
-      {data?.proposals.map((proposal) => (
+      {data?.proposals.map((proposal: any) => (
         <div
           key={proposal.id}
           className="border rounded-lg p-4 hover:shadow-md transition-shadow"

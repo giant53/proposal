@@ -1,12 +1,38 @@
-import { auth } from "@/auth"
-import { redirect } from "next/navigation"
-import { Button } from "@/components/ui/button"
+"use client"
 
-export default async function LoginPage() {
-  const session = await auth()
-  
-  if (session?.user) {
-    redirect("/dashboard")
+import { signIn } from "next-auth/react"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { Input } from "@/components/ui/input"
+
+export default function LoginPage() {
+  ///const router = useRouter()
+  const [loading, setLoading] = useState(false)
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setLoading(true)
+      await signIn("google", { callbackUrl: "/dashboard" })
+    } catch (error) {
+      console.error("Login error:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get("email") as string
+
+    try {
+      setLoading(true)
+      await signIn("email", { email, callbackUrl: "/dashboard" })
+    } catch (error) {
+      console.error("Login error:", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -19,7 +45,7 @@ export default async function LoginPage() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" action="/api/auth/signin/email" method="POST">
+          <form className="space-y-6" onSubmit={handleEmailSubmit}>
             <div>
               <label
                 htmlFor="email"
@@ -28,7 +54,7 @@ export default async function LoginPage() {
                 Email address
               </label>
               <div className="mt-1">
-                <input
+                <Input
                   id="email"
                   name="email"
                   type="email"
@@ -40,7 +66,7 @@ export default async function LoginPage() {
             </div>
 
             <div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full" disabled={loading}>
                 Continue with Email
               </Button>
             </div>
@@ -60,13 +86,12 @@ export default async function LoginPage() {
 
             <div className="mt-6">
               <Button
+                onClick={handleGoogleSignIn}
                 variant="outline"
                 className="w-full"
-                asChild
+                disabled={loading}
               >
-                <a href="/api/auth/signin/google">
-                  Continue with Google
-                </a>
+                Continue with Google
               </Button>
             </div>
           </div>

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Google from "next-auth/providers/google"
@@ -6,24 +7,34 @@ import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
 import { Role } from "@prisma/client"
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
-  adapter: PrismaAdapter(prisma),
-  session: {
-    strategy: "jwt",
-  },
+const adapter = PrismaAdapter(prisma)
+
+const config = {
   pages: {
     signIn: "/login",
     error: "/error",
   },
+  adapter,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      },
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          email: profile.email,
+          image: profile.picture,
+          role: Role.USER,
+        }
+      },
     }),
     CredentialsProvider({
       name: "Credentials",
@@ -31,7 +42,7 @@ export const {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials: any) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials")
         }
@@ -60,19 +71,20 @@ export const {
           email: user.email,
           name: user.name,
           role: user.role,
+          image: user.image,
         }
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       if (user) {
-        token.role = user.role as Role
         token.id = user.id
+        token.role = user.role
       }
       return token
     },
-    async session({ session, token }) {
+    async session({ session, token }: any) {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as Role
@@ -80,4 +92,11 @@ export const {
       return session
     },
   },
-})
+  session: {
+    strategy: "jwt",
+  },
+  debug: process.env.NODE_ENV === "development",
+  secret: process.env.NEXTAUTH_SECRET,
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config)
