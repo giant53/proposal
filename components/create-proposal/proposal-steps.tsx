@@ -3,81 +3,32 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { useCreateProposal } from "@/hooks/use-proposals"
 import { cn } from "@/lib/utils"
 import { Loader2, Heart, RefreshCw } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ProposalLoadingAnimation } from "./loading-animation"
-import { AIModel } from "@/types/ai-models"
 import { ModelSelector } from "./model-selector"
 import { SendProposalForm } from "./send-proposal-form"
+import { RichTextProposal } from "./rich-text-proposal"
 import { toast } from "sonner"
-
-interface ProposalData {
-  aboutYou: string
-  aboutThem: string
-  model: AIModel
-  generatedProposal?: string
-  proposalId?: string
-  recipientName?: string
-  recipientEmail?: string
-  recipientPhone?: string
-  deliveryMethod?: "EMAIL" | "SMS" | "WHATSAPP"
-}
+import { AIProposalResponse, ProposalFormData, SendProposalData } from "@/types/proposal"
 
 export function ProposalSteps() {
   const [step, setStep] = useState(1)
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [fallbackMessage, setFallbackMessage] = useState<string | null>(null)
-  const [proposalData, setProposalData] = useState<ProposalData>({
+  const [proposalData, setProposalData] = useState<ProposalFormData>({
     aboutYou: "",
     aboutThem: "",
-    model: "openai",
+    model: "gemini", // Default to Gemini
   })
-  const { mutate: createProposal, isPending } = useCreateProposal()
 
-  const handleNext = async () => {
-    if (step === 2) {
-      setIsGenerating(true)
-      setError(null)
-      setFallbackMessage(null)
-      try {
-        const response = await fetch("/api/generate-proposal", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            aboutYou: proposalData.aboutYou,
-            aboutThem: proposalData.aboutThem,
-            model: proposalData.model,
-          }),
-        })
-        const data = await response.json()
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to generate proposal")
-        }
-        setProposalData((prev) => ({ ...prev, generatedProposal: data.proposal }))
-        if (data.message) {
-          setFallbackMessage(data.message)
-        }
-        setStep(3)
-      } catch (error) {
-        console.error("Failed to generate proposal:", error)
-        setError(error instanceof Error ? error.message : "Failed to generate proposal")
-      } finally {
-        setIsGenerating(false)
-      }
-    } else {
-      setStep((prev) => prev + 1)
-    }
-  }
-
-  const handleBack = () => setStep((prev) => prev - 1)
-
-  const handleRegenerateProposal = async () => {
+  const generateProposal = async (regenerate: boolean = false) => {
     setIsGenerating(true)
     setError(null)
     setFallbackMessage(null)
+
     try {
       const response = await fetch("/api/generate-proposal", {
         method: "POST",
@@ -88,30 +39,52 @@ export function ProposalSteps() {
           model: proposalData.model,
         }),
       })
-      const data = await response.json()
+
+      const responseData = (await response.json()) as AIProposalResponse
+      
       if (!response.ok) {
-        throw new Error(data.error || "Failed to generate proposal")
+        throw new Error(responseData.message || "Failed to generate proposal")
       }
-      setProposalData((prev) => ({ ...prev, generatedProposal: data.proposal }))
-      if (data.message) {
-        setFallbackMessage(data.message)
+
+      if (!responseData.data?.proposal) {
+        throw new Error("No proposal content received")
+      }
+
+      setProposalData((prev) => ({ 
+        ...prev, 
+        generatedProposal: responseData.data.proposal 
+      }))
+
+      if (responseData.message) {
+        setFallbackMessage(responseData.message)
+      }
+
+      if (!regenerate) {
+        setStep(3)
       }
     } catch (error) {
-      console.error("Failed to regenerate proposal:", error)
-      setError(error instanceof Error ? error.message : "Failed to regenerate proposal")
+      console.error("Failed to generate proposal:", error)
+      setError(error instanceof Error ? error.message : "Failed to generate proposal")
     } finally {
       setIsGenerating(false)
     }
   }
 
-  const handleSendProposal = async (data: {
-    name: string
-    email?: string
-    phone?: string
-    method: "EMAIL" | "SMS" | "WHATSAPP"
-  }) => {
+  const handleNext = async () => {
+    if (step === 2) {
+      await generateProposal()
+    } else {
+      setStep((prev) => prev + 1)
+    }
+  }
+
+  const handleBack = () => setStep((prev) => prev - 1)
+
+  const handleRegenerateProposal = () => generateProposal(true)
+
+  const handleSendProposal = async (data: SendProposalData) => {
     try {
-      // First create the proposal
+      // Create proposal
       const createResponse = await fetch("/api/proposals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -125,31 +98,34 @@ export function ProposalSteps() {
       })
 
       if (!createResponse.ok) {
-        throw new Error("Failed to create proposal")
+        const errorData = await createResponse.json()
+        throw new Error(errorData.message || "Failed to create proposal")
       }
 
       const { data: proposal } = await createResponse.json()
 
-      // Then send the proposal
+      // Send proposal
       const sendResponse = await fetch("/api/proposals/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           proposalId: proposal.id,
+          methods: [data.method],
         }),
       })
 
       if (!sendResponse.ok) {
-        throw new Error("Failed to send proposal")
+        const errorData = await sendResponse.json()
+        throw new Error(errorData.message || "Failed to send proposal")
       }
 
       toast.success("Proposal sent successfully! 💝")
       
-      // Redirect to proposal details page
+      // Redirect to proposal details
       window.location.href = `/proposals/${proposal.id}`
     } catch (error) {
       console.error("Failed to send proposal:", error)
-      toast.error("Failed to send proposal. Please try again.")
+      toast.error(error instanceof Error ? error.message : "Failed to send proposal")
     }
   }
 
@@ -279,9 +255,14 @@ export function ProposalSteps() {
             <div className="bg-white p-6 rounded-lg shadow-lg border border-rose-100">
               {isGenerating ? (
                 <ProposalLoadingAnimation />
+              ) : proposalData.generatedProposal ? (
+                <RichTextProposal 
+                  content={proposalData.generatedProposal}
+                  className="prose-lg"
+                />
               ) : (
-                <p className="whitespace-pre-wrap text-gray-800">
-                  {proposalData.generatedProposal}
+                <p className="text-gray-500 italic">
+                  No proposal generated yet. Try regenerating...
                 </p>
               )}
             </div>
