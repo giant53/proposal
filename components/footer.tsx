@@ -1,6 +1,6 @@
 "use client";
 
-import { FaHeart, FaTwitter, FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa6";
+import { FaTwitter, FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa6";
 import Link from "next/link";
 
 export function Footer() {
