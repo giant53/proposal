@@ -7,6 +7,7 @@ import { ProposalStatus } from "@prisma/client"
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  
 })
 
 export async function POST(req: NextRequest) {
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
     let message = customMessage
     if (!customMessage) {
       const completion = await openai.chat.completions.create({
-        model: "gpt-4-turbo-preview",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",

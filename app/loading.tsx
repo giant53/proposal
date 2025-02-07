@@ -1,6 +1,4 @@
 import Image from "next/image"
-import Link from "next/link"
-
 export default function Loading() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-pink-50 to-rose-100">
