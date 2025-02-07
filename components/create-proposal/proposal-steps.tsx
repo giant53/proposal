@@ -5,18 +5,20 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useCreateProposal } from "@/hooks/use-proposals"
 import { cn } from "@/lib/utils"
-import { Loader2, Heart, Send, RefreshCw } from "lucide-react"
+import { Loader2, Heart, RefreshCw } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ProposalLoadingAnimation } from "./loading-animation"
-import { RecipientForm } from "./recipient-form"
 import { AIModel } from "@/types/ai-models"
 import { ModelSelector } from "./model-selector"
+import { SendProposalForm } from "./send-proposal-form"
+import { toast } from "sonner"
 
 interface ProposalData {
   aboutYou: string
   aboutThem: string
   model: AIModel
   generatedProposal?: string
+  proposalId?: string
   recipientName?: string
   recipientEmail?: string
   recipientPhone?: string
@@ -102,19 +104,53 @@ export function ProposalSteps() {
     }
   }
 
-  const handleRecipientSubmit = (data: {
+  const handleSendProposal = async (data: {
     name: string
     email?: string
     phone?: string
     method: "EMAIL" | "SMS" | "WHATSAPP"
   }) => {
-    createProposal({
-      recipientName: data.name,
-      recipientEmail: data.email,
-      recipientPhone: data.phone,
-      message: proposalData.generatedProposal,
-      deliveryMethod: data.method,
-    })
+    try {
+      // First create the proposal
+      const createResponse = await fetch("/api/proposals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recipientName: data.name,
+          recipientEmail: data.email,
+          recipientPhone: data.phone,
+          message: proposalData.generatedProposal,
+          deliveryMethod: data.method,
+        }),
+      })
+
+      if (!createResponse.ok) {
+        throw new Error("Failed to create proposal")
+      }
+
+      const { data: proposal } = await createResponse.json()
+
+      // Then send the proposal
+      const sendResponse = await fetch("/api/proposals/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proposalId: proposal.id,
+        }),
+      })
+
+      if (!sendResponse.ok) {
+        throw new Error("Failed to send proposal")
+      }
+
+      toast.success("Proposal sent successfully! 💝")
+      
+      // Redirect to proposal details page
+      window.location.href = `/proposals/${proposal.id}`
+    } catch (error) {
+      console.error("Failed to send proposal:", error)
+      toast.error("Failed to send proposal. Please try again.")
+    }
   }
 
   return (
@@ -252,9 +288,12 @@ export function ProposalSteps() {
 
             <div className="mt-8 pt-8 border-t">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                Delivery Details
+                Send Your Proposal
               </h3>
-              <RecipientForm onSubmit={handleRecipientSubmit} />
+              <p className="text-gray-600 mb-6">
+                Choose how you&apos;d like to deliver your heartfelt message
+              </p>
+              <SendProposalForm onSubmit={handleSendProposal} />
             </div>
           </motion.div>
         )}
