@@ -27,12 +27,12 @@ export default function DashboardPage() {
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="bg-gradient-to-r from-rose-500 to-pink-600 text-white py-3"
+        className="bg-gradient-to-r from-rose-500 to-pink-600  text-white py-3"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center space-x-2">
             <Calendar className="w-5 h-5 animate-pulse" />
-            <span className="text-sm font-medium">
+            <span className="text-sm font-bold">
               {daysUntilValentines} days until Valentine&apos;s Day!
             </span>
           </div>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Stats Section */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -110,7 +110,7 @@ export default function DashboardPage() {
             </div>
             <p className="text-3xl font-bold text-blue-600 mt-2">2</p>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Proposals List */}
         <motion.div

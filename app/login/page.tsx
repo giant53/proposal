@@ -1,41 +1,40 @@
-"use client"
+"use client";
 
-import { signIn, useSession } from "next-auth/react"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { Input } from "@/components/ui/input"
-import { motion } from "framer-motion"
-import { Heart, Mail, ArrowRight, Gift, HeartHandshake } from "lucide-react"
-import Link from "next/link"
-import { redirect } from "next/navigation"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
+import { ArrowRight, Gift, Heart, HeartHandshake, Mail } from "lucide-react";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function LoginPage() {
-  const { data: session } = useSession()
-  const [loading, setLoading] = useState(false)
-  const [email, setEmail] = useState("")
+  const { data: session } = useSession();
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
 
   const handleGoogleSignIn = async () => {
     try {
-      setLoading(true)
-      await signIn("google", { callbackUrl: "/dashboard" })
+      setLoading(true);
+      await signIn("google", { callbackUrl: "/dashboard" });
     } catch (error) {
-      console.error("Login error:", error)
+      console.error("Login error:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleEmailSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setLoading(true)
-      await signIn("email", { email, callbackUrl: "/dashboard" })
+      setLoading(true);
+      await signIn("email", { email, callbackUrl: "/dashboard" });
     } catch (error) {
-      console.error("Login error:", error)
+      console.error("Login error:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // If user is already logged in, show a special screen
   if (session?.user) {
@@ -67,7 +66,7 @@ export default function LoginPage() {
           ))}
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
@@ -84,28 +83,34 @@ export default function LoginPage() {
           <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600">
             Welcome Back, {session.user.name}!
           </h2>
-          
+
           <p className="text-gray-600 mb-6">
             You&apos;re already logged in and ready to spread love.
           </p>
 
           <div className="flex flex-col space-y-4">
-            <Button 
-              asChild 
+            <Button
+              asChild
               className="w-full bg-rose-500 hover:bg-rose-600 text-white group"
             >
-              <Link href="/dashboard" className="flex items-center justify-center">
+              <Link
+                href="/dashboard"
+                className="flex items-center justify-center"
+              >
                 <Gift className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 View Your Proposals
               </Link>
             </Button>
 
-            <Button 
-              asChild 
+            <Button
+              asChild
               variant="outline"
               className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 group"
             >
-              <Link href="/proposals/new" className="flex items-center justify-center">
+              <Link
+                href="/proposals/new"
+                className="flex items-center justify-center"
+              >
                 <Heart className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
                 Create New Proposal
               </Link>
@@ -113,12 +118,12 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
-    )
+    );
   }
 
   // Original login form remains the same
   return (
-    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white flex flex-col items-center justify-center pb-12 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Floating Hearts */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(15)].map((_, i) => (
@@ -145,7 +150,7 @@ export default function LoginPage() {
         ))}
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="sm:mx-auto sm:w-full sm:max-w-md z-10"
@@ -158,14 +163,14 @@ export default function LoginPage() {
           <Heart className="w-8 h-8 text-rose-500" />
         </motion.div>
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600">
-          Welcome to proposal.me
+          Welcome to myproposal.❤️
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Create your perfect Valentine&apos;s proposal
         </p>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -196,8 +201,8 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full bg-rose-500 hover:bg-rose-600 text-white group"
                 disabled={loading}
               >
@@ -251,5 +256,5 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
-  )
+  );
 }
