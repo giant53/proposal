@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { Loader2, Mail, MessageSquare, Send } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { FaWhatsapp } from "react-icons/fa6"
 
 interface SendProposalFormProps {
   onSubmit: (data: {
@@ -96,7 +97,7 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
               )}
               onClick={() => setMethod("WHATSAPP")}
             >
-              <MessageSquare className="w-5 h-5" />
+              <FaWhatsapp className="w-5 h-5" />
               <span className="text-sm">WhatsApp</span>
             </Button>
           </div>
