@@ -124,6 +124,8 @@ model Proposal {
   messages        Message[]       @relation("ProposalMessages")
   aiModel         String          // The AI model used to generate the proposal
   creditCost      Int             @default(1) // Number of credits consumed
+  secretHash     String?         @unique
+  isPrivate      Boolean         @default(true)
 
   // Indexes for faster lookups
   @@index([recipientHash])
@@ -260,4 +262,14 @@ model Authenticator {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
  
   @@id([userId, credentialID])
+}
+
+model UnsubscribedEmail {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  createdAt   DateTime @default(now())
+  reason      String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([email])
 }

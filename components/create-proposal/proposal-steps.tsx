@@ -10,12 +10,15 @@ import { ProposalLoadingAnimation } from "./loading-animation"
 import { ModelSelector } from "./model-selector"
 import { SendProposalForm } from "./send-proposal-form"
 import { RichTextProposal } from "./rich-text-proposal"
+import { EditableProposal } from "./editable-proposal"
 import { toast } from "sonner"
 import { AIProposalResponse, ProposalFormData, SendProposalData } from "@/types/proposal"
+import { AIModel } from "@/types/ai-models"
 
 export function ProposalSteps() {
   const [step, setStep] = useState(1)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [fallbackMessage, setFallbackMessage] = useState<string | null>(null)
   const [proposalData, setProposalData] = useState<ProposalFormData>({
@@ -52,7 +55,7 @@ export function ProposalSteps() {
 
       setProposalData((prev) => ({ 
         ...prev, 
-        generatedProposal: responseData.data.proposal 
+        generatedProposal: responseData.data?.proposal 
       }))
 
       if (responseData.message) {
@@ -70,6 +73,36 @@ export function ProposalSteps() {
     }
   }
 
+  const saveProposal = async (content: string) => {
+    setIsSaving(true)
+    try {
+      const response = await fetch("/api/proposals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to save proposal")
+      }
+
+      const { data } = await response.json()
+      setProposalData(prev => ({
+        ...prev,
+        editedProposal: content,
+        savedProposalId: data.id
+      }))
+
+      setStep(4)
+    } catch (error) {
+      throw error
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   const handleNext = async () => {
     if (step === 2) {
       await generateProposal()
@@ -84,33 +117,16 @@ export function ProposalSteps() {
 
   const handleSendProposal = async (data: SendProposalData) => {
     try {
-      // Create proposal
-      const createResponse = await fetch("/api/proposals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          recipientName: data.name,
-          recipientEmail: data.email,
-          recipientPhone: data.phone,
-          message: proposalData.generatedProposal,
-          deliveryMethod: data.method,
-        }),
-      })
-
-      if (!createResponse.ok) {
-        const errorData = await createResponse.json()
-        throw new Error(errorData.message || "Failed to create proposal")
+      if (!proposalData.savedProposalId) {
+        throw new Error("No saved proposal found")
       }
 
-      const { data: proposal } = await createResponse.json()
-
-      // Send proposal
       const sendResponse = await fetch("/api/proposals/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          proposalId: proposal.id,
-          methods: [data.method],
+          proposalId: proposalData.savedProposalId,
+          ...data
         }),
       })
 
@@ -122,7 +138,7 @@ export function ProposalSteps() {
       toast.success("Proposal sent successfully! 💝")
       
       // Redirect to proposal details
-      window.location.href = `/proposals/${proposal.id}`
+      window.location.href = `/proposals/${proposalData.savedProposalId}`
     } catch (error) {
       console.error("Failed to send proposal:", error)
       toast.error(error instanceof Error ? error.message : "Failed to send proposal")
@@ -133,7 +149,7 @@ export function ProposalSteps() {
     <div className="max-w-2xl mx-auto">
       {/* Progress Steps */}
       <div className="flex justify-between mb-8">
-        {[1, 2, 3].map((number) => (
+        {[1, 2, 3, 4].map((number) => (
           <div
             key={number}
             className="flex items-center"
@@ -150,10 +166,10 @@ export function ProposalSteps() {
             >
               {number}
             </div>
-            {number < 3 && (
+            {number < 4 && (
               <div
                 className={cn(
-                  "h-1 w-24 mx-2",
+                  "h-1 w-16 mx-2",
                   step > number ? "bg-green-500" : "bg-gray-200"
                 )}
               />
@@ -200,7 +216,7 @@ export function ProposalSteps() {
               and why they mean so much to you.
             </p>
             <ModelSelector
-              value={proposalData.model}
+              value={proposalData.model as AIModel}
               onChange={(model) => setProposalData((prev) => ({ ...prev, model }))}
               disabled={isGenerating}
             />
@@ -224,7 +240,7 @@ export function ProposalSteps() {
             className="space-y-6"
           >
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Your Proposal</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Edit Your Proposal</h2>
               <Button
                 variant="outline"
                 size="sm"
@@ -256,8 +272,9 @@ export function ProposalSteps() {
               {isGenerating ? (
                 <ProposalLoadingAnimation />
               ) : proposalData.generatedProposal ? (
-                <RichTextProposal 
+                <EditableProposal 
                   content={proposalData.generatedProposal}
+                  onSave={saveProposal}
                   className="prose-lg"
                 />
               ) : (
@@ -266,13 +283,32 @@ export function ProposalSteps() {
                 </p>
               )}
             </div>
+          </motion.div>
+        )}
+
+        {step === 4 && (
+          <motion.div
+            key="step4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <h2 className="text-2xl font-bold text-gray-800">Your Final Proposal</h2>
+            
+            <div className="bg-white p-6 rounded-lg shadow-lg border border-rose-100">
+              <RichTextProposal 
+                content={proposalData.editedProposal || ""}
+                className="prose-lg"
+              />
+            </div>
 
             <div className="mt-8 pt-8 border-t">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
                 Send Your Proposal
               </h3>
               <p className="text-gray-600 mb-6">
-                Choose how you&apos;d like to deliver your heartfelt message
+                Choose one or more ways to deliver your heartfelt message
               </p>
               <SendProposalForm onSubmit={handleSendProposal} />
             </div>
@@ -281,12 +317,12 @@ export function ProposalSteps() {
       </AnimatePresence>
 
       <div className="flex justify-between mt-8">
-        {step > 1 && step < 3 && (
+        {step > 1 && step < 4 && (
           <Button variant="outline" onClick={handleBack}>
             Back
           </Button>
         )}
-        {step < 3 ? (
+        {step < 3 && (
           <Button
             className={cn("ml-auto", step === 1 && "w-full")}
             onClick={handleNext}
@@ -314,7 +350,7 @@ export function ProposalSteps() {
               </>
             )}
           </Button>
-        ) : null}
+        )}
       </div>
     </div>
   )

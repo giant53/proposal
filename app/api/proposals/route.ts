@@ -19,16 +19,16 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json()
     console.log(body)
-    const { recipientEmail, recipientPhone, recipientName, customMessage, deliveryMethod } = body
+    const { content } = body
 
-    if (!recipientEmail && !recipientPhone) {
-      return errorResponse("Either email or phone is required")
-    }
+    // if (!recipientEmail && !recipientPhone) {
+    //   return errorResponse("Either email or phone is required")
+    // }
 
     debugger;
 
     // Generate AI proposal if no custom message
-    let message = customMessage
+    // let message = customMessage
     // if (!customMessage) {
     //   const completion = await openai.chat.completions.create({
     //     model: "gpt-4o-mini",
@@ -50,12 +50,11 @@ export async function POST(req: NextRequest) {
     const proposal = await prisma.proposal.create({
       data: {
         senderId: session.user.id,
-        recipientEmail,
-        recipientPhone,
-        recipientName,
-        message: customMessage || "",
-        deliveryMethod,
-        recipientHash: recipientEmail || recipientPhone, // You should hash this in production
+        recipientName: session.user.name,
+        message: content,
+        customMessage: content,
+        recipientHash: "32478203949", // You should hash this in production
+        deliveryMethod: "EMAIL",
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
         aiModel: "openai",
       },

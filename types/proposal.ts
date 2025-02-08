@@ -1,7 +1,7 @@
 export interface AIProposalResponse {
   success: boolean
   message?: string
-  data: {
+  data?: {
     proposal: string
   }
 }
@@ -9,9 +9,10 @@ export interface AIProposalResponse {
 export interface ProposalFormData {
   aboutYou: string
   aboutThem: string
-  model: AIModel
+  model: string
   generatedProposal?: string
-  proposalId?: string
+  editedProposal?: string
+  savedProposalId?: string
   recipientName?: string
   recipientEmail?: string
   recipientPhone?: string
@@ -24,5 +25,13 @@ export interface SendProposalData {
   name: string
   email?: string
   phone?: string
-  method: "EMAIL" | "SMS" | "WHATSAPP"
+  methods: Array<"EMAIL" | "SMS" | "WHATSAPP">
+}
+
+export interface SavedProposal {
+  id: string
+  content: string
+  createdAt: string
+  updatedAt: string
+  userId: string
 }
