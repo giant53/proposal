@@ -94,15 +94,12 @@ export default function HowItWorksPage() {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-rose-50 to-white">
-      {/* Valentine's Day Countdown Banner */}
-      <div className="bg-gradient-to-r from-rose-500 to-pink-600 text-white py-3 text-center sticky top-0 z-50">
-        <div className="flex items-center justify-center space-x-2 sm:px-4">
-          <Clock className="w-5 h-5 animate-pulse" />
-          <span className="font-semibold">
-            Only {daysUntilValentines} days until Valentine&apos;s Day!
-            Don&apos;t miss your chance!
-          </span>
-        </div>
+      <div className="flex items-center justify-center space-x-2 sm:px-4">
+        <Clock className="w-5 h-5 animate-pulse" />
+        <span className="font-semibold">
+          Only {daysUntilValentines} days until Valentine&apos;s Day! Don&apos;t
+          miss your chance!
+        </span>
       </div>
 
       {/* Hero Section */}

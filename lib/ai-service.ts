@@ -8,15 +8,29 @@ const openai = new OpenAI({
 
 const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
+// In ai-service.ts
 const PROMPT_TEMPLATES = {
-  base: `You are a professional writer helping to create a heartfelt and sincere marriage proposal. Please create a respectful and appropriate proposal that:
-  1. Reflects the unique story of the couple
-  2. Expresses genuine emotions and feelings
-  3. Maintains a respectful and sincere tone
-  4. Includes specific details from their relationship
-  5. Concludes with a clear marriage proposal
-  Please keep the content appropriate and family-friendly.`,
+  base: `You are a professional romance writer crafting a deeply personal valentine proposal. Create content that:
+1. Feels handwritten from the heart with raw, vulnerable emotions
+2. Uses specific details from their relationship history
+3. Incorporates meaningful metaphors related to their journey
+4. Includes 2-3 intimate moments only they would understand
+5. Uses natural, conversational language with occasional imperfections
+6. Follows this emotional arc:
+   - Nostalgic beginning (remembering first meeting)
+   - Vulnerable middle (sharing fears/hopes)
+   - Poetic climax (actual proposal)
+   - Hopeful ending (imagining future)
+7. Format using Markdown for emphasis without markdown syntax:
+   **Bold** for key emotional phrases
+   *Italic* for intimate moments
+   - Bullet points for promises
+   > Quotes for meaningful memories
+8. Better to give a modern tone of love that feels permium and latest trend of 2025
+
+Avoid clichés like "soulmate" or "meant to be". Focus on unique, personal details that feel authentically human.`,
 }
+
 
 export async function generateProposal(
   model: AIModel,
@@ -121,15 +135,21 @@ async function generateDeepSeekProposal(
 }
 
 function generateUserPrompt(aboutYou: string, aboutThem: string): string {
-  return `Create a romantic proposal based on the following information:
-          
-About the person proposing:
-${sanitizeInput(aboutYou)}
+  return `Craft a proposal that would make them say "This is SO us!" Include:
+  
+**Our Unique Story**
+- First meeting: ${sanitizeInput(aboutYou.split(' ').slice(0, 50).join(' '))}
+- Key moments: ${sanitizeInput(aboutThem.split('.').join(' - '))}
 
-About their love and relationship:
-${sanitizeInput(aboutThem)}
+**Love Language**
+- How we show affection: 
+- Secret gestures only we understand:
 
-Please write a beautiful marriage proposal that incorporates these details.`
+**Future Vision**
+- What home means to us:
+- Shared dreams we whisper about:
+
+Write like you're trembling while holding the ring. Include 1 inside joke reference and 2 sensory details (their scent, a song lyric, etc.). Use em dashes—for interrupted thoughts and ... for emotional pauses.`
 }
 
 function sanitizeInput(input: string): string {
