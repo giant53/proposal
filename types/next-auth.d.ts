@@ -19,7 +19,7 @@ declare module "next-auth" {
       remainingCredits: number
       currentPeriodStart?: Date | null
       currentPeriodEnd?: Date | null
-      cancelAtPeriodEnd?: boolean
+      cancelAtPeriodEnd: boolean
       customerId?: string | null
     } & DefaultSession["user"]
   }
@@ -37,11 +37,11 @@ declare module "next-auth" {
 
     // Subscription-related fields
     subscriptionTier: SubscriptionTier
-    subscriptionStatus?: SubscriptionStatus
+    subscriptionStatus: SubscriptionStatus
     remainingCredits: number
     currentPeriodStart?: Date | null
     currentPeriodEnd?: Date | null
-    cancelAtPeriodEnd?: boolean
+    cancelAtPeriodEnd: boolean
     customerId?: string | null
   }
 }
@@ -58,11 +58,11 @@ declare module "next-auth/jwt" {
 
     // Subscription-related fields
     subscriptionTier: SubscriptionTier
-    subscriptionStatus?: SubscriptionStatus
+    subscriptionStatus: SubscriptionStatus
     remainingCredits: number
     currentPeriodStart?: Date | null
     currentPeriodEnd?: Date | null
-    cancelAtPeriodEnd?: boolean
+    cancelAtPeriodEnd: boolean
     customerId?: string | null
   }
 }

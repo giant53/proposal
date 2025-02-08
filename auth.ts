@@ -1,15 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthConfig } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import Google from "next-auth/providers/google"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { prisma } from "./prisma"
 import bcrypt from "bcryptjs"
-import { Role } from "@prisma/client"
+import { Role, SubscriptionTier, SubscriptionStatus } from "@prisma/client"
+import { Adapter } from "next-auth/adapters"
 
-const adapter = PrismaAdapter(prisma)
+export const adapter = PrismaAdapter(prisma) as Adapter
 
-const config = {
+const config: NextAuthConfig = {
   pages: {
     signIn: "/login",
     error: "/error",
@@ -33,6 +34,13 @@ const config = {
           email: profile.email,
           image: profile.picture,
           role: Role.USER,
+          subscriptionTier: SubscriptionTier.FREE,
+          subscriptionStatus: SubscriptionStatus.INACTIVE,
+          remainingCredits: 1,
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+          hashedPassword: null,
+          cancelAtPeriodEnd: false,
         }
       },
     }),
@@ -72,6 +80,12 @@ const config = {
           name: user.name,
           role: user.role,
           image: user.image,
+          subscriptionTier: user.subscriptionTier,
+          subscriptionStatus: user.subscriptionStatus,
+          remainingCredits: user.remainingCredits,
+          currentPeriodStart: user.currentPeriodStart,
+          currentPeriodEnd: user.currentPeriodEnd,
+          cancelAtPeriodEnd: user.cancelAtPeriodEnd,
         }
       },
     }),
@@ -81,6 +95,11 @@ const config = {
       if (user) {
         token.id = user.id
         token.role = user.role
+        token.subscriptionTier = user.subscriptionTier
+        token.subscriptionStatus = user.subscriptionStatus
+        token.remainingCredits = user.remainingCredits
+        token.currentPeriodStart = user.currentPeriodStart
+        token.currentPeriodEnd = user.currentPeriodEnd
       }
       return token
     },
@@ -88,12 +107,17 @@ const config = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as Role
+        session.user.subscriptionTier = token.subscriptionTier as SubscriptionTier
+        session.user.subscriptionStatus = token.subscriptionStatus as SubscriptionStatus
+        session.user.remainingCredits = token.remainingCredits as number
+        session.user.currentPeriodStart = token.currentPeriodStart as Date | null
+        session.user.currentPeriodEnd = token.currentPeriodEnd as Date | null
       }
       return session
     },
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   debug: process.env.NODE_ENV === "development",
   secret: process.env.NEXTAUTH_SECRET,

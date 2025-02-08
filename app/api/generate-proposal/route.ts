@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { auth } from "@/auth"
 import { errorResponse, successResponse } from "@/lib/api-response"
 import { NextRequest } from "next/server"
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     try {
       // Use sample proposal for testing
-      const proposal = SAMPLE_PROPOSAL
+      const proposal = await generateProposal(aboutYou, aboutThem, model)
 
       // Validate proposal content
       if (!proposal || proposal.trim().length === 0) {

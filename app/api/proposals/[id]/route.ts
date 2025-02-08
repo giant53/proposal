@@ -5,7 +5,6 @@ import { NextRequest } from "next/server"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
 ) {
   try {
     const session = await auth()
@@ -13,8 +12,14 @@ export async function GET(
       return errorResponse("Unauthorized", 401)
     }
 
+    const params = req.nextUrl.searchParams
+    const id = params.get("id")
+    if (!id) {
+      return errorResponse("Missing id", 400)
+    }
+
     const proposal = await prisma.proposal.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         messages: true,
       },
@@ -37,7 +42,6 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
 ) {
   try {
     const session = await auth()
@@ -48,8 +52,15 @@ export async function PATCH(
     const body = await req.json()
     const { status, customMessage } = body
 
+    const params = req.nextUrl.searchParams
+    const id = params.get("id")
+
+    if (!id) {
+      return errorResponse("Missing id")
+    }
+
     const proposal = await prisma.proposal.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!proposal) {
@@ -61,7 +72,7 @@ export async function PATCH(
     }
 
     const updatedProposal = await prisma.proposal.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...(status && { status }),
         ...(customMessage && { customMessage }),
@@ -77,7 +88,6 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
 ) {
   try {
     const session = await auth()
@@ -85,8 +95,15 @@ export async function DELETE(
       return errorResponse("Unauthorized", 401)
     }
 
+    const params = req.nextUrl.searchParams
+    const id = params.get("id")
+
+    if (!id) {
+      return errorResponse("Missing id")
+    }
+
     const proposal = await prisma.proposal.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
 
     if (!proposal) {
@@ -98,10 +115,10 @@ export async function DELETE(
     }
 
     await prisma.proposal.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
-    return successResponse({ id: params.id }, "Proposal deleted successfully")
+    return successResponse({ id }, "Proposal deleted successfully")
   } catch (error) {
     console.error("Proposal deletion error:", error)
     return errorResponse("Failed to delete proposal")

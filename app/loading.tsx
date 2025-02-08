@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image"
 import { motion } from "framer-motion"
-import { Heart, HeartHandshake, Rose, Sparkles } from "lucide-react"
+import { Heart, HeartHandshake, Sparkles } from "lucide-react"
 
 export default function Loading() {
   return (

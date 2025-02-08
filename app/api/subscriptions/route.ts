@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { prisma } from "@/prisma"
-import { stripe } from "@/lib/stripe"
-import { SubscriptionTier } from "@prisma/client"
 
 export async function GET() {
   try {
@@ -50,42 +48,42 @@ export async function POST(req: Request) {
     }
 
     // Create or retrieve Stripe customer
-    let customerId = user.customerId
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.name,
-        metadata: {
-          userId: user.id
-        }
-      })
-      customerId = customer.id
+    // let customerId = user.customerId
+    // if (!customerId) {
+    //   const customer = await stripe.customers.create({
+    //     email: user.email,
+    //     name: user.name,
+    //     metadata: {
+    //       userId: user.id
+    //     }
+    //   })
+    //   customerId = customer.id
 
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { customerId }
-      })
-    }
+    //   await prisma.user.update({
+    //     where: { id: user.id },
+    //     data: { customerId }
+    //   })
+    // }
 
-    // Create Stripe checkout session
-    const checkoutSession = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [
-        {
-          price: plan.stripePriceId,
-          quantity: 1
-        }
-      ],
-      mode: plan.tier === SubscriptionTier.YEARLY ? "payment" : "subscription",
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
-      metadata: {
-        userId: user.id,
-        planId: plan.id
-      }
-    })
+    // // Create Stripe checkout session
+    // const checkoutSession = await stripe.checkout.sessions.create({
+    //   customer: customerId,
+    //   line_items: [
+    //     {
+    //       price: plan.stripePriceId,
+    //       quantity: 1
+    //     }
+    //   ],
+    //   mode: plan.tier === SubscriptionTier.YEARLY ? "payment" : "subscription",
+    //   success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?success=true`,
+    //   cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing?canceled=true`,
+    //   metadata: {
+    //     userId: user.id,
+    //     planId: plan.id
+    //   }
+    // })
 
-    return NextResponse.json({ url: checkoutSession.url })
+    return NextResponse.json({ url: '' })
   } catch (error) {
     console.error("[SUBSCRIPTIONS_POST]", error)
     return new NextResponse("Internal Error", { status: 500 })

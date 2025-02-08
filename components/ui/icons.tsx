@@ -2,7 +2,6 @@ import {
   Sparkles,
   Zap,
   Heart,
-  type LucideIcon,
 } from "lucide-react"
 
 export const Icons = {

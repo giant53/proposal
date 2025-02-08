@@ -32,6 +32,7 @@ enum SubscriptionStatus {
   CANCELLED
   EXPIRED
   PAST_DUE
+  INACTIVE
 }
 
 // Users (both senders and recipients)
@@ -50,17 +51,17 @@ model User {
 
   // Subscription related fields
   subscriptionTier    SubscriptionTier    @default(FREE)
-  subscriptionStatus  SubscriptionStatus? // Only for PREMIUM users
+  subscriptionStatus  SubscriptionStatus  @default(INACTIVE) // Only for PREMIUM users
   subscriptionId      String?             // External subscription ID (e.g., Stripe)
   currentPeriodStart  DateTime?           // Subscription period start
   currentPeriodEnd    DateTime?           // Subscription period end
-  cancelAtPeriodEnd   Boolean?            // Whether to cancel at period end
+  cancelAtPeriodEnd   Boolean             @default(false)            // Whether to cancel at period end
   remainingCredits    Int                 @default(1)  // Monthly proposal credits
   lastCreditReset     DateTime            @default(now()) // Last time credits were reset
 
   // Payment related
-  customerId         String?              // External customer ID (e.g., Stripe)
-  defaultPaymentId   String?              // Default payment method
+  customerId          String?             // External customer ID (e.g., Stripe)
+  defaultPaymentId    String?             // Default payment method
 
   // Relationships
   proposals          Proposal[]           @relation("ProposalSender")

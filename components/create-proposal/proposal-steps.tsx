@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { Loader2, Heart, RefreshCw } from "lucide-react"
+import { Loader2, Heart, RefreshCw, Lock, Save } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ProposalLoadingAnimation } from "./loading-animation"
 import { ModelSelector } from "./model-selector"
@@ -26,6 +26,157 @@ export function ProposalSteps() {
     aboutThem: "",
     model: "gemini", // Default to Gemini
   })
+
+  // Throttling mechanism for save requests
+  const lastSaveTime = useRef(0)
+  const saveRequestQueue = useRef<(() => Promise<void>)[]>([])
+  const isSaveInProgress = useRef(false)
+
+  const throttledSave = useCallback(async (content: string) => {
+    const currentTime = Date.now()
+    const THROTTLE_INTERVAL = 5000 // 5 seconds between save attempts
+
+    const performSave = async () => {
+      if (isSaveInProgress.current) {
+        return
+      }
+
+      isSaveInProgress.current = true;
+      setIsSaving(true)
+
+      try {
+        const response = await fetch("/api/proposals", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content }),
+        })
+
+        if (!response.ok) {
+          throw new Error("Failed to save proposal")
+        }
+
+        const { data } = await response.json()
+        setProposalData(prev => ({
+          ...prev,
+          editedProposal: content,
+          savedProposalId: data.id
+        }))
+
+        lastSaveTime.current = Date.now()
+        setStep(4)
+        toast.success("Proposal saved successfully!", {
+          description: "Your love story is now securely stored ❤️"
+        })
+      } catch (error) {
+        console.error("Failed to save proposal:", error)
+        toast.error("Failed to save proposal", {
+          description: "Please try again later"
+        })
+      } finally {
+        isSaveInProgress.current = false
+        setIsSaving(false)
+
+        // Process next queued save if exists
+        if (saveRequestQueue.current.length > 0) {
+          const nextSave = saveRequestQueue.current.shift()
+          if (nextSave) {
+            await nextSave()
+          }
+        }
+      }
+    }
+
+    // Throttle save requests
+    if (currentTime - lastSaveTime.current < THROTTLE_INTERVAL) {
+      // Queue the save request
+      saveRequestQueue.current.push(() => performSave())
+      return
+    }
+
+    await performSave()
+  }, [])
+
+  const SaveAnimation = () => (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ 
+        opacity: 1, 
+        scale: 1,
+        rotate: [0, 10, -10, 0],
+      }}
+      transition={{ 
+        duration: 0.5,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-rose-50/90 backdrop-blur-sm"
+    >
+      <div className="relative">
+        {/* Floating hearts */}
+        {[...Array(10)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ 
+              x: Math.random() * 200 - 100, 
+              y: -100, 
+              opacity: 0.3,
+              scale: Math.random() * 0.5 + 0.5
+            }}
+            animate={{ 
+              y: window.innerHeight + 100, 
+              x: Math.random() * 200 - 100,
+              rotate: 360,
+              opacity: [0.3, 0.7, 0.3]
+            }}
+            transition={{ 
+              duration: Math.random() * 10 + 10, 
+              repeat: Infinity, 
+              repeatType: "loop" 
+            }}
+            className="absolute"
+          >
+            <Heart className="text-rose-300/50 w-8 h-8" />
+          </motion.div>
+        ))}
+        
+        {/* Main saving indicator */}
+        <motion.div
+          animate={{ 
+            scale: [1, 1.1, 1],
+            rotate: [0, 5, -5, 0]
+          }}
+          transition={{ 
+            duration: 0.5,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        >
+          <Save className="w-24 h-24 text-rose-500 animate-pulse" />
+        </motion.div>
+        
+        {/* Text overlay */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-6 text-center"
+        >
+          <h2 className="text-2xl font-bold text-rose-600 flex items-center justify-center space-x-2">
+            <Lock className="w-6 h-6 text-amber-400" />
+            <span>Saving Your Love Story</span>
+            <Lock className="w-6 h-6 text-amber-400" />
+          </h2>
+          <p className="text-rose-500 mt-2 flex items-center justify-center">
+            Securely storing your heartfelt message 
+            <Heart className="w-4 h-4 ml-2 animate-bounce text-rose-400" />
+          </p>
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+
+  const saveProposal = async (content: string) => {
+    await throttledSave(content)
+  }
 
   const generateProposal = async (regenerate: boolean = false) => {
     setIsGenerating(true)
@@ -73,36 +224,6 @@ export function ProposalSteps() {
     }
   }
 
-  const saveProposal = async (content: string) => {
-    setIsSaving(true)
-    try {
-      const response = await fetch("/api/proposals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content,
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to save proposal")
-      }
-
-      const { data } = await response.json()
-      setProposalData(prev => ({
-        ...prev,
-        editedProposal: content,
-        savedProposalId: data.id
-      }))
-
-      setStep(4)
-    } catch (error) {
-      throw error
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
   const handleNext = async () => {
     if (step === 2) {
       await generateProposal()
@@ -147,6 +268,11 @@ export function ProposalSteps() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      {/* Save Animation Overlay */}
+      <AnimatePresence>
+        {isSaving && <SaveAnimation />}
+      </AnimatePresence>
+
       {/* Progress Steps */}
       <div className="flex justify-between mb-8">
         {[1, 2, 3, 4].map((number) => (
