@@ -61,42 +61,77 @@ export async function POST(req: NextRequest) {
             if (!email) throw new Error("Email required for EMAIL delivery")
             return sendEmail({
               to: email,
-              subject: "Someone Special Has a Message for You ",
+              subject: "A Special Message for You 💝",
               content: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 30px;">
-                  <div style="text-align: center; margin-bottom: 30px;">
-                    <h1 style="color: #e11d48; margin: 0;"> A Special Message Awaits You</h1>
-                  </div>
-                  
-                  <div style="background-color: #fff1f2; padding: 25px; border-radius: 8px; margin: 20px 0;">
-                    <p style="color: #1f2937; font-size: 18px; line-height: 1.6; margin-bottom: 20px;">
-                      Dear ${name},
-                    </p>
-                    <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                      Someone special has crafted a heartfelt proposal just for you. 
-                    </p>
-                    <p style="color: #4b5563; font-size: 16px; line-height: 1.6;">
-                      To view this personal message, click the button below:
-                    </p>
-                  </div>
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <meta charset="utf-8">
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                  <title>A Special Message</title>
+                </head>
+                <body style="margin: 0; padding: 0; background-color: #fdf2f4;">
+                  <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 20px auto; background: linear-gradient(to bottom right, #ffffff, #fff1f2); border-radius: 20px; box-shadow: 0 8px 20px rgba(225, 29, 72, 0.1); padding: 40px; text-align: center;">
+                    
+                    <!-- Header with animated hearts (using background image) -->
+                    <div style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2UxMWQ0OCIgZD0iTTEyIDIxLjM1bC0xLjQ1LTEuMzJDNS40IDE1LjM2IDIgMTIuMjggMiA4LjUgMiA1LjQyIDQuNDIgMyA3LjUgM2MxLjc0IDAgMy40MS44MSA0LjUgMi4wOUMxMy4wOSAzLjgxIDE0Ljc2IDMgMTYuNSAzIDE5LjU4IDMgMjIgNS40MiAyMiA4LjVjMCAzLjc4LTMuNCA2Ljg2LTguNTUgMTEuNTRMMTIgMjEuMzV6Ii8+PC9zdmc+'); height: 60px; background-repeat: no-repeat; background-position: center; background-size: contain; margin-bottom: 30px;">
+                    </div>
 
-                  <div style="text-align: center; margin: 30px 0;">
-                    <a href="${proposalUrl}" style="background-color: #e11d48; color: white; padding: 15px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; display: inline-block; transition: background-color 0.3s;">
-                      View Your Special Message 
-                    </a>
-                  </div>
+                    <!-- Main Heading -->
+                    <h1 style="color: #e11d48; font-size: 28px; margin: 0 0 30px 0; font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
+                      A Surprise sent at speed of light Just for You
+                    </h1>
 
-                  <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-                    <p style="color: #6b7280; font-size: 14px;">
-                      This message was sent with care via Proposal.me 
-                    </p>
-                    <p style="color: #6b7280; font-size: 12px; margin-top: 10px;">
-                      <a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #6b7280; text-decoration: underline;">
-                        Unsubscribe from future proposals
+                    <!-- Romantic Border Container -->
+                    <div style="background: linear-gradient(135deg, #fff5f6, #fecdd3); padding: 30px; border-radius: 15px; border: 2px solid rgba(225, 29, 72, 0.1); margin: 20px 0;">
+                      <p style="color: #881337; font-size: 18px; line-height: 1.6; margin-bottom: 25px; font-weight: 500;">
+                        Dearest ${name},
+                      </p>
+                      <p style="color: #9f1239; font-size: 17px; line-height: 1.7; margin-bottom: 25px;">
+                        Someone is overflowing with feelings they can no longer keep hidden...
+                      </p>
+                      <p style="color: #9f1239; font-size: 17px; line-height: 1.7;">
+                        They've created something special, just for your eyes 💝
+                      </p>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div style="margin: 35px 0;">
+                      <a href="${proposalUrl}" 
+                         style="background: linear-gradient(135deg, #e11d48, #be123c); 
+                                color: white; 
+                                padding: 16px 35px; 
+                                text-decoration: none; 
+                                border-radius: 30px; 
+                                font-weight: bold; 
+                                font-size: 18px;
+                                display: inline-block; 
+                                transition: all 0.3s ease;
+                                box-shadow: 0 4px 15px rgba(225, 29, 72, 0.2);">
+                        Unveil Your Special Message ✨
                       </a>
-                    </p>
+                    </div>
+
+                    <!-- Decorative Elements -->
+                    <div style="color: #e11d48; font-size: 24px; margin: 30px 0;">
+                      ✨ 💝 ✨
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(225, 29, 72, 0.1);">
+                      <p style="color: #9f1239; font-size: 14px; margin-bottom: 15px;">
+                        Delivered with love by Proposal.love
+                      </p>
+                      <p style="color: #9f1239; font-size: 8px;">
+                        <a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${encodeURIComponent(email)}" 
+                           style="color: #9f1239; text-decoration: underline;">
+                          Unsubscribe from future proposals
+                        </a>
+                      </p>
+                    </div>
                   </div>
-                </div>
+                </body>
+                </html>
               `,
               recipientName: name,
             })
@@ -105,7 +140,8 @@ export async function POST(req: NextRequest) {
             if (!phone) throw new Error("Phone required for SMS delivery")
             return sendSMS({
               to: phone,
-              content: ` Someone special has a message for you! View it here: ${proposalUrl}`,
+              content: `You have received a confidential personal message via Proposal.love. 
+Visit ${proposalUrl} to view. Msg&data rates may apply. Reply STOP to unsubscribe.`,
               recipientName: name,
             })
           
@@ -113,7 +149,15 @@ export async function POST(req: NextRequest) {
             if (!phone) throw new Error("Phone required for WhatsApp delivery")
             return sendWhatsApp({
               to: phone,
-              content: ` Someone special has crafted a heartfelt message just for you!\n\nView it here: ${proposalUrl}`,
+              content: `Confidential Personal Message 🔒
+
+A message has been sent to you via Proposal.love. This is a private communication.
+
+View your message: ${proposalUrl}
+
+Privacy Notice: If this message was sent to you by mistake, please delete it immediately.
+
+To stop receiving messages, reply STOP.`,
               recipientName: name,
             })
           

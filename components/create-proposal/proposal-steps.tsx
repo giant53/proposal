@@ -11,6 +11,8 @@ import { ModelSelector } from "./model-selector"
 import { SendProposalForm } from "./send-proposal-form"
 import { RichTextProposal } from "./rich-text-proposal"
 import { EditableProposal } from "./editable-proposal"
+import { RichTextPreview } from "./rich-text-preview"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { AIProposalResponse, ProposalFormData, SendProposalData } from "@/types/proposal"
 import { AIModel } from "@/types/ai-models"
@@ -266,36 +268,44 @@ export function ProposalSteps() {
     }
   }
 
+  const [proposalViewMode, setProposalViewMode] = useState<"edit" | "preview">("edit")
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="w-full max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* Save Animation Overlay */}
       <AnimatePresence>
         {isSaving && <SaveAnimation />}
       </AnimatePresence>
 
       {/* Progress Steps */}
-      <div className="flex justify-between mb-8">
+      <div className="flex justify-between items-center mb-8 space-x-2">
         {[1, 2, 3, 4].map((number) => (
           <div
             key={number}
-            className="flex items-center"
+            className="flex-1 flex items-center"
           >
-            <div
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0.6 }}
+              animate={{ 
+                scale: step === number ? 1 : 0.8, 
+                opacity: step === number ? 1 : 0.6 
+              }}
+              transition={{ duration: 0.3 }}
               className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ease-in-out",
                 step === number
-                  ? "bg-rose-500 text-white"
+                  ? "bg-rose-500 text-white ring-4 ring-rose-200/50"
                   : step > number
                   ? "bg-green-500 text-white"
                   : "bg-gray-200 text-gray-500"
               )}
             >
               {number}
-            </div>
+            </motion.div>
             {number < 4 && (
               <div
                 className={cn(
-                  "h-1 w-16 mx-2",
+                  "flex-1 h-1 mx-2 transition-colors duration-300",
                   step > number ? "bg-green-500" : "bg-gray-200"
                 )}
               />
@@ -365,46 +375,96 @@ export function ProposalSteps() {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">Edit Your Proposal</h2>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleRegenerateProposal}
-                disabled={isGenerating}
-              >
-                {isGenerating ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                )}
-                Regenerate
-              </Button>
+            <div className="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 flex-grow">
+                Edit Your Proposal
+              </h2>
+              <div className="flex items-center space-x-4 w-full sm:w-auto">
+                <Tabs 
+                  value={proposalViewMode} 
+                  onValueChange={(value) => setProposalViewMode(value as "edit" | "preview")}
+                  className="bg-rose-50 rounded-full p-1 flex-grow sm:flex-grow-0"
+                >
+                  <TabsList className="bg-transparent w-full">
+                    <TabsTrigger 
+                      value="edit" 
+                      className={cn(
+                        "flex-1 px-3 sm:px-4 py-1 rounded-full transition-colors text-sm",
+                        proposalViewMode === "edit" 
+                          ? "bg-rose-500 text-white" 
+                          : "text-rose-500 hover:bg-rose-100"
+                      )}
+                    >
+                      Edit
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="preview" 
+                      className={cn(
+                        "flex-1 px-3 sm:px-4 py-1 rounded-full transition-colors text-sm",
+                        proposalViewMode === "preview" 
+                          ? "bg-rose-500 text-white" 
+                          : "text-rose-500 hover:bg-rose-100"
+                      )}
+                    >
+                      Preview
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRegenerateProposal}
+                  disabled={isGenerating}
+                  className="hidden sm:flex"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                  )}
+                  Regenerate
+                </Button>
+              </div>
             </div>
             
             {fallbackMessage && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-700">
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700"
+              >
                 {fallbackMessage}
-              </div>
+              </motion.div>
             )}
             
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"
+              >
                 {error}
-              </div>
+              </motion.div>
             )}
 
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-rose-100">
+            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
               {isGenerating ? (
                 <ProposalLoadingAnimation />
               ) : proposalData.generatedProposal ? (
-                <EditableProposal 
-                  content={proposalData.generatedProposal}
-                  onSave={saveProposal}
-                  className="prose-lg"
-                />
+                proposalViewMode === "edit" ? (
+                  <EditableProposal 
+                    content={proposalData.generatedProposal}
+                    onSave={saveProposal}
+                    className="prose-base sm:prose-lg"
+                  />
+                ) : (
+                  <RichTextPreview 
+                    content={proposalData.generatedProposal}
+                    className="prose-base sm:prose-lg"
+                  />
+                )
               ) : (
-                <p className="text-gray-500 italic">
+                <p className="text-gray-500 italic text-center">
                   No proposal generated yet. Try regenerating...
                 </p>
               )}
@@ -422,10 +482,10 @@ export function ProposalSteps() {
           >
             <h2 className="text-2xl font-bold text-gray-800">Your Final Proposal</h2>
             
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-rose-100">
+            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
               <RichTextProposal 
                 content={proposalData.editedProposal || ""}
-                className="prose-lg"
+                className="prose-base sm:prose-lg"
               />
             </div>
 
@@ -442,10 +502,93 @@ export function ProposalSteps() {
         )}
       </AnimatePresence>
 
-      <div className="flex justify-between mt-8">
+      {/* Mobile Bottom Navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-2xl z-50 p-4 sm:hidden">
+        <div className="flex justify-between space-x-4">
+          {step > 1 && step < 4 && (
+            <Button 
+              variant="outline" 
+              onClick={handleBack} 
+              className="flex-1"
+            >
+              Back
+            </Button>
+          )}
+          {step === 3 && proposalViewMode === "edit" && (
+            <Button
+              onClick={() => saveProposal(proposalData.generatedProposal || "")}
+              disabled={!proposalData.generatedProposal || isSaving}
+              className="flex-1"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Proposal
+                </>
+              )}
+            </Button>
+          )}
+          {step < 3 && (
+            <Button
+              className={cn("flex-1", step === 1 && "w-full")}
+              onClick={handleNext}
+              disabled={
+                (step === 1 && !proposalData.aboutYou) ||
+                (step === 2 && !proposalData.aboutThem) ||
+                isGenerating
+              }
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  {step === 2 ? (
+                    <>
+                      <Heart className="w-4 h-4 mr-2" />
+                      Generate Proposal
+                    </>
+                  ) : (
+                    "Continue"
+                  )}
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Desktop Navigation */}
+      <div className="hidden sm:flex justify-between mt-8">
         {step > 1 && step < 4 && (
           <Button variant="outline" onClick={handleBack}>
             Back
+          </Button>
+        )}
+        {step === 3 && proposalViewMode === "edit" && (
+          <Button
+            onClick={() => saveProposal(proposalData.generatedProposal || "")}
+            disabled={!proposalData.generatedProposal || isSaving}
+            className="ml-auto"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Save Proposal
+              </>
+            )}
           </Button>
         )}
         {step < 3 && (
