@@ -85,20 +85,20 @@ async function generateGeminiProposal(
       ],
     })
 
-//     const prompt = `${PROMPT_TEMPLATES.base}
+    const prompt = `${PROMPT_TEMPLATES.base}
 
-// Context about the person proposing:
-// ${sanitizeInput(aboutYou)}
+    Context about the person proposing:
+    ${sanitizeInput(aboutYou)}
 
-// Context about their relationship:
-// ${sanitizeInput(aboutThem)}
+    Context about their relationship:
+    ${sanitizeInput(aboutThem)}
 
-// Please write a beautiful marriage proposal that incorporates these details while keeping the content appropriate and family-friendly.`
+    Please write a beautiful valentines day proposal that incorporates these details while keeping the content appropriate and family-friendly.`
 
-    const prompt = "Explain how AI works"
+    //const prompt = "Explain how AI works"
     const result = await model.generateContent(prompt)
     console.log(result)
-    const response = await result.response
+    const response = result.response
 
     if (response.text().trim().length === 0) {
       throw new Error("Generated content was empty")

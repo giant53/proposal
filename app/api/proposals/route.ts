@@ -18,30 +18,33 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json()
+    console.log(body)
     const { recipientEmail, recipientPhone, recipientName, customMessage, deliveryMethod } = body
 
     if (!recipientEmail && !recipientPhone) {
       return errorResponse("Either email or phone is required")
     }
 
+    debugger;
+
     // Generate AI proposal if no custom message
     let message = customMessage
-    if (!customMessage) {
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful assistant that creates personalized proposal messages."
-          },
-          {
-            role: "user",
-            content: `Create a proposal message for ${recipientName}`
-          }
-        ]
-      })
-      message = completion.choices[0].message.content || ""
-    }
+    // if (!customMessage) {
+    //   const completion = await openai.chat.completions.create({
+    //     model: "gpt-4o-mini",
+    //     messages: [
+    //       {
+    //         role: "system",
+    //         content: "You are a helpful assistant that creates personalized proposal messages."
+    //       },
+    //       {
+    //         role: "user",
+    //         content: `Create a proposal message for ${recipientName}`
+    //       }
+    //     ]
+    //   })
+    //   message = completion.choices[0].message.content || ""
+    // }
 
     // Create proposal
     const proposal = await prisma.proposal.create({
@@ -50,10 +53,11 @@ export async function POST(req: NextRequest) {
         recipientEmail,
         recipientPhone,
         recipientName,
-        message,
+        message: customMessage || "",
         deliveryMethod,
         recipientHash: recipientEmail || recipientPhone, // You should hash this in production
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        aiModel: "openai",
       },
     })
 

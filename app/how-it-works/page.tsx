@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
   Clock,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useAnimation } from "framer-motion";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -32,79 +33,84 @@ const ProcessStep = ({
   description: string;
   image: string;
   delay: number;
-}) => (
-  <motion.div
-    initial={{ opacity: 0, x: -50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.8, delay }}
-    className="flex items-center gap-8 mb-16"
-  >
-    <div className="relative flex-1">
-      <div className="absolute -left-4 -top-4 w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 font-bold text-xl">
-        {step}
-      </div>
-      <div className="bg-white rounded-xl shadow-lg p-8">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4">{title}</h3>
-        <p className="text-gray-600 mb-6">{description}</p>
-        <div className="relative h-64 rounded-lg overflow-hidden">
-          <Image src={image} alt={title} fill className="object-cover" />
+}) => {
+  const controls = useAnimation();
+
+  useEffect(() => {
+    controls.start({
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.8, delay }
+    });
+  }, [controls, delay]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -50 }}
+      animate={controls}
+      className="flex items-center gap-8 mb-16"
+    >
+      <div className="relative flex-1">
+        <div className="absolute -left-4 -top-4 w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 font-bold text-xl">
+          {step}
+        </div>
+        <div className="bg-white rounded-xl shadow-lg p-8">
+          <h3 className="text-2xl font-bold text-gray-800 mb-4">{title}</h3>
+          <p className="text-gray-600 mb-6">{description}</p>
+          <div className="relative h-64 rounded-lg overflow-hidden">
+            <Image src={image} alt={title} fill className="object-cover" />
+          </div>
         </div>
       </div>
-    </div>
-    {step < 4 && (
-      <motion.div
-        animate={{ x: [0, 10, 0] }}
-        transition={{ duration: 1, repeat: Infinity }}
-        className="hidden md:block"
-      >
-        <ArrowRight className="w-8 h-8 text-rose-400" />
-      </motion.div>
-    )}
-  </motion.div>
-);
+      {step < 4 && (
+        <div className="hidden md:block">
+          <ArrowRight className="w-8 h-8 text-rose-400" />
+        </div>
+      )}
+    </motion.div>
+  );
+};
 
 export default function HowItWorksPage() {
-  const daysUntilValentines = Math.max(
-    0,
-    Math.ceil(
-      (new Date(2025, 1, 14).getTime() - new Date().getTime()) /
-        (1000 * 60 * 60 * 24)
-    )
-  );
+  const [daysUntilValentines, setDaysUntilValentines] = useState(0);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const calculateDays = () => {
+      const valentinesDay = new Date(2025, 1, 14);
+      const today = new Date();
+      const difference = valentinesDay.getTime() - today.getTime();
+      const days = Math.max(0, Math.ceil(difference / (1000 * 60 * 60 * 24)));
+      setDaysUntilValentines(days);
+    };
+
+    calculateDays();
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-rose-50 to-white">
       {/* Valentine's Day Countdown Banner */}
-      <motion.div
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="bg-gradient-to-r from-rose-500 to-pink-600 text-white py-3 text-center sticky top-0 z-50"
-      >
-        <div className="flex items-center justify-center space-x-2">
+      <div className="bg-gradient-to-r from-rose-500 to-pink-600 text-white py-3 text-center sticky top-0 z-50">
+        <div className="flex items-center justify-center space-x-2 sm:px-4">
           <Clock className="w-5 h-5 animate-pulse" />
           <span className="font-semibold">
             Only {daysUntilValentines} days until Valentine&apos;s Day!
             Don&apos;t miss your chance!
           </span>
         </div>
-      </motion.div>
+      </div>
 
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-b from-rose-100 to-white py-24">
-        <motion.div
-          className="container mx-auto px-6 text-center relative z-10"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-        >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="inline-block mb-6"
-          >
+        <div className="container mx-auto px-6 text-center relative z-10">
+          <div className="inline-block mb-6">
             <Gift className="w-20 h-20 text-rose-500 mx-auto" />
-          </motion.div>
+          </div>
           <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-rose-600 to-pink-600">
             Make This Valentine&apos;s Special
           </h1>
@@ -123,32 +129,43 @@ export default function HowItWorksPage() {
               </Link>
             </Button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Floating hearts background */}
         <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -100],
-                opacity: [0.3, 0],
-                scale: [1, 0.5],
-              }}
-              transition={{
-                duration: Math.random() * 5 + 3,
-                repeat: Infinity,
-                repeatType: "loop",
-              }}
-            >
-              <Heart className="text-rose-200 w-8 h-8" />
-            </motion.div>
-          ))}
+          {[...Array(20)].map((_, i) => {
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const duration = Math.random() * 5 + 3;
+
+            return (
+              <motion.div
+                key={i}
+                className="absolute"
+                style={{
+                  left: `${left}%`,
+                  top: `${top}%`,
+                }}
+                initial={{ 
+                  y: 0, 
+                  opacity: 0.3,
+                  scale: 1 
+                }}
+                animate={{ 
+                  y: -100,
+                  opacity: 0,
+                  scale: 0.5 
+                }}
+                transition={{
+                  duration,
+                  repeat: Infinity,
+                  repeatType: "loop",
+                }}
+              >
+                <Heart className="text-rose-200 w-8 h-8" />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
 
