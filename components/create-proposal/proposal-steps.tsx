@@ -451,7 +451,7 @@ export function ProposalSteps() {
               </motion.div>
             )}
 
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
+            <div className="bg-white -mx-9 md:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
               {isGenerating ? (
                 <ProposalLoadingAnimation />
               ) : proposalData.generatedProposal ? (

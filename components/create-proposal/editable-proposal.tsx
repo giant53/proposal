@@ -23,11 +23,13 @@ const fonts = [
   { value: "font-dancing-script", label: "Dancing Script", description: "Elegant & Flowing", category: "Romantic" },
   { value: "font-great-vibes", label: "Great Vibes", description: "Romantic & Classic", category: "Romantic" },
   { value: "font-parisienne", label: "Parisienne", description: "Graceful & Delicate", category: "Romantic" },
+  { value: "font-lobster", label: "Lobster", description: "Cursive & Elegant", category: "Romantic" },
   
   // Standard Fonts
-  { value: "font-sans", label: "Inter", description: "Modern & Clean", category: "Standard" },
+  { value: "font-inter", label: "Inter", description: "Modern & Clean", category: "Standard" },
   { value: "font-serif", label: "Serif", description: "Traditional & Elegant", category: "Standard" },
   { value: "font-mono", label: "Monospace", description: "Technical & Precise", category: "Standard" },
+  { value: "font-roboto", label: "Roboto", description: "Flexible & Modern", category: "Standard" },
 ]
 
 export function EditableProposal({

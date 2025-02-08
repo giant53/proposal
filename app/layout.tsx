@@ -35,7 +35,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-grow">{children}</main>
           <Footer />
-          <Toaster richColors position="top-right" />
+          <Toaster />
           <Analytics />
           <SpeedInsights />
         </Providers>
