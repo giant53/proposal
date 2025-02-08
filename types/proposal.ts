@@ -13,6 +13,7 @@ export interface ProposalFormData {
   generatedProposal?: string
   editedProposal?: string
   savedProposalId?: string
+  font?: string
   recipientName?: string
   recipientEmail?: string
   recipientPhone?: string

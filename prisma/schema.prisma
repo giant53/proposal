@@ -127,6 +127,7 @@ model Proposal {
   creditCost      Int             @default(1) // Number of credits consumed
   secretHash     String?         @unique
   isPrivate      Boolean         @default(true)
+  proposalFont   String?         @default("font-dancing-script")
 
   // Indexes for faster lookups
   @@index([recipientHash])

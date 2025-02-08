@@ -34,7 +34,7 @@ export function ProposalSteps() {
   const saveRequestQueue = useRef<(() => Promise<void>)[]>([])
   const isSaveInProgress = useRef(false)
 
-  const throttledSave = useCallback(async (content: string) => {
+  const throttledSave = useCallback(async (content: string, font: string) => {
     const currentTime = Date.now()
     const THROTTLE_INTERVAL = 5000 // 5 seconds between save attempts
 
@@ -50,7 +50,10 @@ export function ProposalSteps() {
         const response = await fetch("/api/proposals", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content }),
+          body: JSON.stringify({ 
+            content, 
+            font 
+          }),
         })
 
         if (!response.ok) {
@@ -176,8 +179,8 @@ export function ProposalSteps() {
     </motion.div>
   )
 
-  const saveProposal = async (content: string) => {
-    await throttledSave(content)
+  const saveProposal = async (content: string, font: string) => {
+    await throttledSave(content, font)
   }
 
   const generateProposal = async (regenerate: boolean = false) => {
@@ -269,6 +272,7 @@ export function ProposalSteps() {
   }
 
   const [proposalViewMode, setProposalViewMode] = useState<"edit" | "preview">("edit")
+  const [selectedFont, setSelectedFont] = useState("font-dancing-script")
 
   return (
     <div className="w-full max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -454,13 +458,17 @@ export function ProposalSteps() {
                 proposalViewMode === "edit" ? (
                   <EditableProposal 
                     content={proposalData.generatedProposal}
-                    onSave={saveProposal}
-                    className="prose-base sm:prose-lg"
+                    onSave={(content) => saveProposal(content, selectedFont)}
+                    className={cn("prose-base sm:prose-lg", selectedFont)}
+                    font={selectedFont}
+                    onFontChange={setSelectedFont}
                   />
                 ) : (
                   <RichTextPreview 
                     content={proposalData.generatedProposal}
                     className="prose-base sm:prose-lg"
+                    font={selectedFont}
+                    onFontChange={setSelectedFont}
                   />
                 )
               ) : (
@@ -516,7 +524,7 @@ export function ProposalSteps() {
           )}
           {step === 3 && proposalViewMode === "edit" && (
             <Button
-              onClick={() => saveProposal(proposalData.generatedProposal || "")}
+              onClick={() => saveProposal(proposalData.generatedProposal || "", selectedFont)}
               disabled={!proposalData.generatedProposal || isSaving}
               className="flex-1"
             >
@@ -574,7 +582,7 @@ export function ProposalSteps() {
         )}
         {step === 3 && proposalViewMode === "edit" && (
           <Button
-            onClick={() => saveProposal(proposalData.generatedProposal || "")}
+            onClick={() => saveProposal(proposalData.generatedProposal || "", selectedFont)}
             disabled={!proposalData.generatedProposal || isSaving}
             className="ml-auto"
           >

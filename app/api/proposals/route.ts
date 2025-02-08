@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json()
     console.log(body)
-    const { content } = body
+    const { content, font = "font-dancing-script" } = body
 
     // if (!recipientEmail && !recipientPhone) {
     //   return errorResponse("Either email or phone is required")
@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
         deliveryMethod: "EMAIL",
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
         aiModel: "openai",
+        proposalFont: font, // Save the selected font
       },
     })
 
