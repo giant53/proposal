@@ -35,7 +35,8 @@ const config: NextAuthConfig = {
           image: profile.picture,
           role: Role.USER,
           subscriptionTier: SubscriptionTier.FREE,
-          subscriptionStatus: SubscriptionStatus.INACTIVE,
+          // Change this line - don't use null
+          subscriptionStatus: SubscriptionStatus.INACTIVE, // Make sure this matches your enum values
           remainingCredits: 1,
           currentPeriodStart: new Date(),
           currentPeriodEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
