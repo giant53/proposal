@@ -7,7 +7,7 @@ import {
   Send,
   MessageCircle,
   Gift,
-  Sparkles,
+  // Sparkles,
   HeartHandshake,
 } from "lucide-react";
 import Image from "next/image";
@@ -132,7 +132,7 @@ export default function Home() {
                 Begin Your Love Story
               </Link>
             </Button>
-            <Button
+            {/* <Button
               asChild
               variant="outline"
               size="lg"
@@ -142,7 +142,7 @@ export default function Home() {
                 <Sparkles className="mr-2 w-5 h-5" />
                 View Success Stories
               </Link>
-            </Button>
+            </Button> */}
           </div>
         </motion.div>
       </div>
