@@ -3,145 +3,72 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { ArrowRight, Heart, Lock, Mail } from "lucide-react";
-import { signIn, useSession } from "next-auth/react";
+import { ArrowRight, Heart, Mail, Lock, User } from "lucide-react";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
-  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
   const [error, setError] = useState("");
-  const [focused, setFocused] = useState<'email' | 'password' | null>(null);
+  const [focused, setFocused] = useState<'name' | 'email' | 'password' | 'confirmPassword' | null>(null);
 
-  const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    // Basic password strength validation
+    if (formData.password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+
     try {
       setLoading(true);
-      const result = await signIn("credentials", {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+      }
+
+      // Sign in the user after successful registration
+      await signIn("credentials", {
         email: formData.email,
         password: formData.password,
         redirect: false,
       });
 
-      if (result?.error) {
-        setError("Invalid email or password");
-        return;
-      }
-
       router.push("/dashboard");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      setError("An error occurred during login");
+      setError(error instanceof Error ? error.message : "Registration failed");
     } finally {
       setLoading(false);
     }
   };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      setLoading(true);
-      await signIn("google", { callbackUrl: "/dashboard" });
-    } catch (error) {
-      console.error("Login error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // If user is already logged in, show a special screen
-  if (session?.user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Floating Hearts Background */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -100],
-                opacity: [0.3, 0],
-                scale: [1, 0.5],
-              }}
-              transition={{
-                duration: Math.random() * 5 + 3,
-                repeat: Infinity,
-                repeatType: "loop",
-              }}
-            >
-              <Heart className="text-rose-200 w-6 h-6" />
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl shadow-rose-200/50 p-10 text-center max-w-md w-full z-10 border border-rose-100/50"
-        >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="mx-auto w-28 h-28 bg-rose-100/50 rounded-full flex items-center justify-center mb-6 border-4 border-rose-200/50"
-          >
-            <Image src="/wlogo.svg" alt="Heart" width={80} height={80} className="p-2" />
-          </motion.div>
-
-          <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600">
-            Welcome Back, {session.user.name?.split(' ')[0] || 'Lover'}!
-          </h2>
-
-          <p className="text-gray-600 mb-8 text-lg">
-            You&apos;re already logged in and ready to create magical moments.
-          </p>
-
-          <div className="flex flex-col space-y-4">
-            <Button
-              asChild
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white group transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
-            >
-              <Link
-                href="/dashboard"
-                className="flex items-center justify-center"
-              >
-                <Heart className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-                View Your Proposals
-              </Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 group border-2 transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
-            >
-              <Link
-                href="/proposals/new"
-                className="flex items-center justify-center"
-              >
-                <Heart className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-                Create New Proposal
-              </Link>
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white flex flex-col items-center justify-center pb-12 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -184,15 +111,15 @@ export default function LoginPage() {
           <Image src="/wlogo.svg" alt="Heart" width={80} height={80} className="p-2" />
         </motion.div>
         <h2 className="mt-6 text-center text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600">
-          Welcome Back
+          Create your account
         </h2>
         <p className="mt-2 text-center text-base text-gray-600">
-          New to myproposal.love?{" "}
+          Already have an account?{" "}
           <Link 
-            href="/register" 
+            href="/login" 
             className="text-rose-600 hover:text-rose-500 font-semibold underline-offset-4 hover:underline transition-all"
           >
-            Create an account
+            Sign in
           </Link>
         </p>
       </motion.div>
@@ -204,7 +131,7 @@ export default function LoginPage() {
         className="mt-8 sm:mx-auto sm:w-full sm:max-w-md z-10"
       >
         <div className="bg-white/90 backdrop-blur-md px-6 py-10 shadow-2xl shadow-rose-200/50 sm:rounded-2xl border border-rose-100/50">
-          <form className="space-y-6" onSubmit={handleEmailLogin}>
+          <form className="space-y-6" onSubmit={handleRegister}>
             {error && (
               <motion.div 
                 initial={{ opacity: 0, y: -10 }}
@@ -214,10 +141,43 @@ export default function LoginPage() {
                 {error}
               </motion.div>
             )}
+            
+            <div>
+              <label 
+                htmlFor="name" 
+                className={`block text-sm font-medium transition-colors duration-300 ${
+                  focused === 'name' ? 'text-rose-600' : 'text-gray-700'
+                }`}
+              >
+                Full Name
+              </label>
+              <div className="mt-1 relative">
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onFocus={() => setFocused('name')}
+                  onBlur={() => setFocused(null)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className={`block w-full rounded-lg border transition-all duration-300 ${
+                    focused === 'name' 
+                      ? 'border-rose-500 ring-2 ring-rose-200' 
+                      : 'border-rose-200 focus:border-rose-500'
+                  }`}
+                />
+                <User className={`absolute right-3 top-2.5 h-5 w-5 transition-colors duration-300 ${
+                  focused === 'name' ? 'text-rose-500' : 'text-gray-400'
+                }`} />
+              </div>
+            </div>
 
             <div>
-              <label
-                htmlFor="email"
+              <label 
+                htmlFor="email" 
                 className={`block text-sm font-medium transition-colors duration-300 ${
                   focused === 'email' ? 'text-rose-600' : 'text-gray-700'
                 }`}
@@ -250,8 +210,8 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
+              <label 
+                htmlFor="password" 
                 className={`block text-sm font-medium transition-colors duration-300 ${
                   focused === 'password' ? 'text-rose-600' : 'text-gray-700'
                 }`}
@@ -282,14 +242,36 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end">
-              <div className="text-sm">
-                <Link
-                  href="/forgot-password"
-                  className="text-rose-600 hover:text-rose-500 font-semibold underline-offset-4 hover:underline transition-all"
-                >
-                  Forgot your password?
-                </Link>
+            <div>
+              <label 
+                htmlFor="confirmPassword" 
+                className={`block text-sm font-medium transition-colors duration-300 ${
+                  focused === 'confirmPassword' ? 'text-rose-600' : 'text-gray-700'
+                }`}
+              >
+                Confirm Password
+              </label>
+              <div className="mt-1 relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  value={formData.confirmPassword}
+                  onFocus={() => setFocused('confirmPassword')}
+                  onBlur={() => setFocused(null)}
+                  onChange={(e) =>
+                    setFormData({ ...formData, confirmPassword: e.target.value })
+                  }
+                  className={`block w-full rounded-lg border transition-all duration-300 ${
+                    focused === 'confirmPassword' 
+                      ? 'border-rose-500 ring-2 ring-rose-200' 
+                      : 'border-rose-200 focus:border-rose-500'
+                  }`}
+                />
+                <Lock className={`absolute right-3 top-2.5 h-5 w-5 transition-colors duration-300 ${
+                  focused === 'confirmPassword' ? 'text-rose-500' : 'text-gray-400'
+                }`} />
               </div>
             </div>
 
@@ -299,7 +281,7 @@ export default function LoginPage() {
                 className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white group transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
                 disabled={loading}
               >
-                Sign in
+                Create Account
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -319,7 +301,7 @@ export default function LoginPage() {
 
             <div className="mt-6">
               <Button
-                onClick={handleGoogleSignIn}
+                onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
                 variant="outline"
                 className="w-full border-rose-200 hover:bg-rose-50 text-rose-600 hover:text-rose-700 group transition-all duration-300 ease-in-out transform hover:scale-[1.02] border-2"
               >
