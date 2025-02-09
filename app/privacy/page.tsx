@@ -21,7 +21,7 @@ export default function PrivacyPage() {
                 Our Commitment to Privacy
               </h2>
               <p className="text-gray-600 leading-relaxed">
-                At myproposal.❤️, we understand that your proposals are deeply
+                At myproposal.love, we understand that your proposals are deeply
                 personal and meaningful. We are committed to protecting your
                 privacy and ensuring that your romantic moments remain secure
                 and confidential.

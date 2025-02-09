@@ -62,7 +62,7 @@ export async function sendEmail({
         ${content}
       </div>
       <p style="color: #64748b; font-size: 14px;">
-        This is a special proposal sent via myproposal.❤️. Please respond with care.
+        This is a special proposal sent via myproposal.love. Please respond with care.
       </p>
     </div>
   `;

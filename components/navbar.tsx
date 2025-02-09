@@ -19,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import Image from "next/image";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -32,8 +33,8 @@ export function Navbar() {
             href="/"
             className="flex items-center space-x-2 text-xl font-bold text-rose-600 hover:text-rose-700 transition-colors"
           >
-            {/* <Heart className="w-6 h-6" /> */}
-            <span>myproposal.❤️</span>
+            <span className="hidden md:block">myproposal.love</span>
+            <Image src="/wlogo.svg" alt="Logo" width={40} height={40} />
           </Link>
 
           {/* Navigation Links */}

@@ -163,7 +163,7 @@ export default function LoginPage() {
           <Heart className="w-8 h-8 text-rose-500" />
         </motion.div>
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600">
-          Welcome to myproposal.❤️
+          Welcome to myproposal.love
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
           Create your perfect Valentine&apos;s proposal

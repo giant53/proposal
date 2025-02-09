@@ -298,7 +298,7 @@ export default function HowItWorksPage() {
           </Button>
           <p className="mt-6 text-rose-100">
             Join 1000+ couples who made their moment special with
-            myproposal.❤️
+            myproposal.love 
           </p>
         </div>
       </motion.div>

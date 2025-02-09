@@ -2,6 +2,7 @@
 
 import { FaTwitter, FaInstagram, FaFacebook, FaLinkedin } from "react-icons/fa6";
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -13,8 +14,9 @@ export function Footer() {
             <div className="flex items-center space-x-2 mb-4">
               {/* <FaHeart className="w-8 h-8 text-rose-500" /> */}
               <span className="text-2xl font-bold text-rose-600">
-                myproposal.❤️
+                myproposal.love
               </span>
+              <Image src="/wlogo.svg" alt="Logo" width={40} height={40} />
             </div>
             <p className="text-gray-600 mb-4">
               Transform your love story into an unforgettable moment with

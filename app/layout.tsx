@@ -14,7 +14,7 @@ const greatVibes = Great_Vibes({ subsets: ["latin"], weight: "400", variable: "-
 const parisienne = Parisienne({ subsets: ["latin"], weight: "400", variable: "--font-parisienne" });
 
 export const metadata: Metadata = {
-  title: "myproposal.❤️ - AI-Powered Love Story Crafting",
+  title: "myproposal.love - AI-Powered Love Story Crafting",
   description:
     "Transform your love story into an unforgettable moment with AI-powered proposal crafting.",
   icons: {
