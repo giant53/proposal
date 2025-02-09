@@ -21,16 +21,14 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
   const [methods, setMethods] = useState<DeliveryMethod[]>([])
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  const [phone, setPhone] = useState("")
+  //const [phone, setPhone] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const toggleMethod = (method: DeliveryMethod) => {
-    setMethods(prev => 
-      prev.includes(method)
-        ? prev.filter(m => m !== method)
-        : [...prev, method]
-    )
+    // Only allow email method
+    console.log(method)
+    setMethods(["EMAIL"])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -45,9 +43,8 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
     try {
       await onSubmit({
         name,
-        email: methods.includes("EMAIL") ? email : undefined,
-        phone: methods.some(m => ["SMS", "WHATSAPP"].includes(m)) ? phone : undefined,
-        methods,
+        email: email,
+        methods: ["EMAIL"],
       })
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to send proposal")
@@ -86,74 +83,81 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
               <Mail className="w-5 h-5" />
               <span className="text-sm">Email</span>
             </Button>
-            <Button
-              type="button"
-              variant={methods.includes("SMS") ? "default" : "outline"}
-              className={cn(
-                "flex-col py-4 h-auto gap-2",
-                methods.includes("SMS") && "bg-rose-500 hover:bg-rose-600"
-              )}
-              onClick={() => toggleMethod("SMS")}
+            <motion.div
+              initial={{ opacity: 0.6 }}
+              whileHover={{ scale: 1.05, opacity: 1 }}
+              className="relative"
             >
-              <Mail className="w-5 h-5" />
-              <span className="text-sm">SMS</span>
-            </Button>
-            <Button
-              type="button"
-              variant={methods.includes("WHATSAPP") ? "default" : "outline"}
-              className={cn(
-                "flex-col py-4 h-auto gap-2",
-                methods.includes("WHATSAPP") && "bg-rose-500 hover:bg-rose-600"
-              )}
-              onClick={() => toggleMethod("WHATSAPP")}
+              <Button
+                type="button"
+                disabled
+                variant="outline"
+                className="flex-col py-4 h-auto gap-2 w-full opacity-70 cursor-not-allowed relative"
+              >
+                <Mail className="w-5 h-5 text-gray-400" />
+                <span className="text-sm text-gray-400">SMS</span>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
+                >
+                  Soon
+                </motion.div>
+              </Button>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0.6 }}
+              whileHover={{ scale: 1.05 }}
+              className="relative"
             >
-              <FaWhatsapp className="w-5 h-5" />
-              <span className="text-sm">WhatsApp</span>
-            </Button>
+              <Button
+                type="button"
+                disabled
+                variant="outline"
+                className="flex-col py-4 h-auto gap-2 w-full opacity-50 cursor-not-allowed relative"
+              >
+                <FaWhatsapp className="w-5 h-5 text-gray-400" />
+                <span className="text-sm text-gray-400">WhatsApp</span>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
+                >
+                  Soon
+                </motion.div>
+              </Button>
+            </motion.div>
           </div>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xs text-gray-500 mt-2 text-center"
+          >
+            📣 SMS and WhatsApp delivery options are coming soon! We&apos;re working hard to expand your proposal delivery methods.
+          </motion.p>
         </div>
 
         <AnimatePresence mode="wait">
-          {methods.includes("EMAIL") && (
-            <motion.div
-              key="email"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-2"
-            >
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter their email"
-                required={methods.includes("EMAIL")}
-                className="transition-all duration-200 focus:ring-rose-500"
-              />
-            </motion.div>
-          )}
-          {methods.some(m => ["SMS", "WHATSAPP"].includes(m)) && (
-            <motion.div
-              key="phone"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="space-y-2"
-            >
-              <Label htmlFor="phone">Phone Number</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Enter their phone number"
-                required={methods.some(m => ["SMS", "WHATSAPP"].includes(m))}
-                className="transition-all duration-200 focus:ring-rose-500"
-              />
-            </motion.div>
-          )}
+          <motion.div
+            key="email"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="space-y-2"
+          >
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter their email"
+              required
+              className="transition-all duration-200 focus:ring-rose-500"
+            />
+          </motion.div>
         </AnimatePresence>
       </div>
 

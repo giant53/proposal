@@ -64,74 +64,152 @@ export async function POST(req: NextRequest) {
               subject: "A Special Message for You 💝",
               content: `
                 <!DOCTYPE html>
-                <html>
-                <head>
-                  <meta charset="utf-8">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <title>A Special Message</title>
-                </head>
-                <body style="margin: 0; padding: 0; background-color: #fdf2f4;">
-                  <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 20px auto; background: linear-gradient(to bottom right, #ffffff, #fff1f2); border-radius: 20px; box-shadow: 0 8px 20px rgba(225, 29, 72, 0.1); padding: 40px; text-align: center;">
-                    
-                    <!-- Header with animated hearts (using background image) -->
-                    <div style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2UxMWQ0OCIgZD0iTTEyIDIxLjM1bC0xLjQ1LTEuMzJDNS40IDE1LjM2IDIgMTIuMjggMiA4LjUgMiA1LjQyIDQuNDIgMyA3LjUgM2MxLjc0IDAgMy40MS44MSA0LjUgMi4wOUMxMy4wOSAzLjgxIDE0Ljc2IDMgMTYuNSAzIDE5LjU4IDMgMjIgNS40MiAyMiA4LjVjMCAzLjc4LTMuNCA2Ljg2LTguNTUgMTEuNTRMMTIgMjEuMzV6Ii8+PC9zdmc+'); height: 60px; background-repeat: no-repeat; background-position: center; background-size: contain; margin-bottom: 30px;">
-                    </div>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="supported-color-schemes" content="light">
+    <title>A Special Message</title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* Reset styles */
+        body, #bodyTable { 
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        /* Ensure Outlook renders backgrounds */
+        body, table, td, div, p, a {
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+        
+        /* Responsive styles */
+        @media screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+            }
+            .fluid {
+                max-width: 100% !important;
+                height: auto !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            .stack-column {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                direction: ltr !important;
+            }
+            .center-on-mobile {
+                text-align: center !important;
+            }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; width: 100%; background-color: #fdf2f4; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+    <!-- Hidden preheader text -->
+    <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+        Someone has a special message waiting for you... 
+    </div>
 
-                    <!-- Main Heading -->
-                    <h1 style="color: #e11d48; font-size: 28px; margin: 0 0 30px 0; font-weight: 700; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
-                      A Surprise sent at speed of light Just for You
-                    </h1>
+    <center style="width: 100%; background: #fdf2f4; text-align: left;">
+        <div style="max-width: 600px; margin: auto;" class="email-container">
+            <!--[if mso]>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center">
+            <tr>
+            <td>
+            <![endif]-->
+            
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px; margin: auto;">
+                <tr>
+                    <td style="padding: 20px 0; text-align: center">
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                                <td style="background: #ffffff; border-radius: 20px; padding: 40px 20px; text-align: center;">
+                                    <!-- Heart Icon -->
+                                    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2UxMWQ0OCIgZD0iTTEyIDIxLjM1bC0xLjQ1LTEuMzJDNS40IDE1LjM2IDIgMTIuMjggMiA4LjUgMiA1LjQyIDQuNDIgMyA3LjUgM2MxLjc0IDAgMy40MS44MSA0LjUgMi4wOUMxMy4wOSAzLjgxIDE0Ljc2IDMgMTYuNSAzIDE5LjU4IDMgMjIgNS40MiAyMiA4LjVjMCAzLjc4LTMuNCA2Ljg2LTguNTUgMTEuNTRMMTIgMjEuMzV6Ii8+PC9zdmc+" width="60" height="60" alt="Heart" style="margin-bottom: 30px;">
+                                    
+                                    <!-- Main Heading -->
+                                    <h1 style="color: #e11d48; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 28px; line-height: 36px; margin: 0 0 30px 0; font-weight: 700;">
+                                        A Surprise sent at speed of light Just for You
+                                    </h1>
 
-                    <!-- Romantic Border Container -->
-                    <div style="background: linear-gradient(135deg, #fff5f6, #fecdd3); padding: 30px; border-radius: 15px; border: 2px solid rgba(225, 29, 72, 0.1); margin: 20px 0;">
-                      <p style="color: #881337; font-size: 18px; line-height: 1.6; margin-bottom: 25px; font-weight: 500;">
-                        Dearest ${name},
-                      </p>
-                      <p style="color: #9f1239; font-size: 17px; line-height: 1.7; margin-bottom: 25px;">
-                        Someone is overflowing with feelings they can no longer keep hidden...
-                      </p>
-                      <p style="color: #9f1239; font-size: 17px; line-height: 1.7;">
-                        They've created something special, just for your eyes 💝
-                      </p>
-                    </div>
+                                    <!-- Message Container -->
+                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                        <tr>
+                                            <td style="background: #fff5f6; padding: 30px; border-radius: 15px; border: 2px solid #fecdd3;">
+                                                <p style="color: #881337; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 18px; line-height: 1.6; margin: 0 0 25px 0; font-weight: 500;">
+                                                    Dearest ${name},
+                                                </p>
+                                                <p style="color: #9f1239; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 17px; line-height: 1.7; margin: 0 0 25px 0;">
+                                                    Someone has created something special, just for your eyes 💝
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
 
-                    <!-- CTA Button -->
-                    <div style="margin: 35px 0;">
-                      <a href="${proposalUrl}" 
-                         style="background: linear-gradient(135deg, #e11d48, #be123c); 
-                                color: white; 
-                                padding: 16px 35px; 
-                                text-decoration: none; 
-                                border-radius: 30px; 
-                                font-weight: bold; 
-                                font-size: 18px;
-                                display: inline-block; 
-                                transition: all 0.3s ease;
-                                box-shadow: 0 4px 15px rgba(225, 29, 72, 0.2);">
-                        Unveil Your Special Message ✨
-                      </a>
-                    </div>
+                                    <!-- CTA Button -->
+                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 35px auto;">
+                                        <tr>
+                                            <td style="border-radius: 30px; background: #e11d48;">
+                                                <a href="${proposalUrl}" 
+                                                   style="background: #e11d48; border: 15px solid #e11d48; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 18px; line-height: 1.1; text-align: center; text-decoration: none; display: block; border-radius: 30px; font-weight: bold;">
+                                                    <!--[if mso]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->
+                                                    Unveil Your Special Message ✨
+                                                    <!--[if mso]>&nbsp;&nbsp;&nbsp;&nbsp;<![endif]-->
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
 
-                    <!-- Decorative Elements -->
-                    <div style="color: #e11d48; font-size: 24px; margin: 30px 0;">
-                      ✨ 💝 ✨
-                    </div>
+                                    <!-- Decorative Elements -->
+                                    <div style="color: #e11d48; font-size: 24px; margin: 30px 0;">
+                                        ✨ 💝 ✨
+                                    </div>
 
-                    <!-- Footer -->
-                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(225, 29, 72, 0.1);">
-                      <p style="color: #9f1239; font-size: 14px; margin-bottom: 15px;">
-                        Delivered with love by Proposal.love
-                      </p>
-                      <p style="color: #9f1239; font-size: 8px;">
-                        <a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${encodeURIComponent(email)}" 
-                           style="color: #9f1239; text-decoration: underline;">
-                          Unsubscribe from future proposals
-                        </a>
-                      </p>
-                    </div>
-                  </div>
-                </body>
-                </html>
+                                    <!-- Footer -->
+                                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                        <tr>
+                                            <td style="padding: 20px 0 0 0; border-top: 1px solid #fecdd3;">
+                                                <p style="color: #9f1239; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; margin: 0 0 15px 0;">
+                                                    Delivered with love by Proposal.love
+                                                </p>
+                                                <p style="color: #9f1239; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 12px; margin: 0;">
+                                                    <a href="${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe?email=${encodeURIComponent(email)}" 
+                                                       style="color: #9f1239; text-decoration: underline;">
+                                                        Unsubscribe from future proposals
+                                                    </a>
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <!--[if mso]>
+            </td>
+            </tr>
+            </table>
+            <![endif]-->
+        </div>
+    </center>
+</body>
+</html>
               `,
               recipientName: name,
             })

@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     try {
       // Use sample proposal for testing
-      const proposal =  SAMPLE_PROPOSAL // await generateProposal(model, aboutYou, aboutThem)
+      const proposal = await generateProposal(model, aboutYou, aboutThem)
 
       // Validate proposal content
       if (!proposal || proposal.trim().length === 0) {
