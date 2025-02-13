@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FaTwitter, FaInstagram, FaFacebook, FaLinkedin, FaHeart, FaEnvelope } from "react-icons/fa6";
+import { FaTwitter, FaLinkedin, FaHeart, FaEnvelope } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -67,15 +67,15 @@ export function Footer() {
             <div className="flex space-x-4">
               {[
                 { icon: FaTwitter, href: "https://twitter.com/myproposal_love", label: "Twitter" },
-                { icon: FaInstagram, href: "https://instagram.com/myproposal.love", label: "Instagram" },
-                { icon: FaFacebook, href: "https://facebook.com/myproposal.love", label: "Facebook" },
+                // { icon: FaInstagram, href: "https://instagram.com/myproposal.love", label: "Instagram" },
+                // { icon: FaFacebook, href: "https://facebook.com/myproposal.love", label: "Facebook" },
                 { icon: FaLinkedin, href: "https://linkedin.com/company/myproposal-love", label: "LinkedIn" }
               ].map((social, index) => (
                 <Link
                   key={index}
                   href={social.href}
                   aria-label={social.label}
-                  className="text-rose-400 hover:text-rose-600 transition-all transform hover:scale-110"
+                  className="text-rose-300 hover:text-rose-600 transition-all transform hover:scale-110"
                 >
                   <social.icon className="w-6 h-6" />
                 </Link>
@@ -91,8 +91,8 @@ export function Footer() {
             </h4>
             <ul className="space-y-3">
               {[
-                { text: "Proposal Ideas", href: "/ideas" },
-                { text: "Location Finder", href: "/locations" },
+                // { text: "Proposal Ideas", href: "/ideas" },
+                // { text: "Location Finder", href: "/locations" },
                 { text: "Success Stories", href: "/stories" },
                 { text: "Proposal Tips", href: "/tips" },
                 { text: "Valentine's Special", href: "/valentine" }
@@ -117,9 +117,6 @@ export function Footer() {
             <ul className="space-y-3">
               {[
                 { text: "About Us", href: "/about" },
-                { text: "Blog", href: "/blog" },
-                { text: "Careers", href: "/careers" },
-                { text: "Press Kit", href: "/press" },
                 { text: "Contact", href: "/contact" }
               ].map((link, index) => (
                 <li key={index}>
@@ -144,8 +141,8 @@ export function Footer() {
                 { text: "Terms of Service", href: "/terms" },
                 { text: "Privacy Policy", href: "/privacy" },
                 { text: "Cookie Policy", href: "/cookies" },
-                { text: "Help Center", href: "/help" },
-                { text: "FAQs", href: "/faqs" }
+                // { text: "Help Center", href: "/help" },
+                // { text: "FAQs", href: "/faqs" }
               ].map((link, index) => (
                 <li key={index}>
                   <Link
