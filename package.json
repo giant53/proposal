@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "NODE_ENV=production prisma generate && next build",
+    "build": "NODE_ENV=production prisma generate && next build && pnpm run prepare-build",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "prisma generate && prepare-build",
+    "postinstall": "prisma generate",
     "generate-sitemap": "node scripts/generate-sitemap.js",
     "generate-pwa": "node scripts/generate-pwa-assets.js",
     "prepare-build": "npm run generate-pwa && npm run generate-sitemap && npm run build"
