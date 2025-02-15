@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json()
     console.log(body)
-    const { content, font = "font-dancing-script" } = body
+    const { content, font = "inter" } = body
 
     // if (!recipientEmail && !recipientPhone) {
     //   return errorResponse("Either email or phone is required")
@@ -45,6 +45,8 @@ export async function POST(req: NextRequest) {
     //   })
     //   message = completion.choices[0].message.content || ""
     // }
+
+    console.log("session: " + session);
 
     // Create proposal
     const proposal = await prisma.proposal.create({

@@ -287,3 +287,18 @@ model PasswordResetToken {
   @@index([email])
   @@index([token])
 }
+
+model WaitlistSubscriber {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  name        String?
+  country     String?
+  reason      String?   // Why they're interested
+  source      String?   // Where they came from
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  notified    Boolean   @default(false)
+  
+  @@index([email])
+  @@index([notified])
+}
