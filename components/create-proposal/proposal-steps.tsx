@@ -4,8 +4,8 @@ import { useState, useCallback, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { Loader2, Heart, RefreshCw, Lock, Save } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
+import { Loader2, Heart, RefreshCw, Save } from "lucide-react"
+import { motion, AnimatePresence, Variants } from "framer-motion"
 import { ProposalLoadingAnimation } from "./loading-animation"
 import { ModelSelector } from "./model-selector"
 import { SendProposalForm } from "./send-proposal-form"
@@ -100,84 +100,6 @@ export function ProposalSteps() {
 
     await performSave()
   }, [])
-
-  const SaveAnimation = () => (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ 
-        opacity: 1, 
-        scale: 1,
-        rotate: [0, 10, -10, 0],
-      }}
-      transition={{ 
-        duration: 0.5,
-        repeat: Infinity,
-        repeatType: "reverse"
-      }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-rose-50/90 backdrop-blur-sm"
-    >
-      <div className="relative">
-        {/* Floating hearts */}
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            initial={{ 
-              x: Math.random() * 200 - 100, 
-              y: -100, 
-              opacity: 0.3,
-              scale: Math.random() * 0.5 + 0.5
-            }}
-            animate={{ 
-              y: window.innerHeight + 100, 
-              x: Math.random() * 200 - 100,
-              rotate: 360,
-              opacity: [0.3, 0.7, 0.3]
-            }}
-            transition={{ 
-              duration: Math.random() * 10 + 10, 
-              repeat: Infinity, 
-              repeatType: "loop" 
-            }}
-            className="absolute"
-          >
-            <Heart className="text-rose-300/50 w-8 h-8" />
-          </motion.div>
-        ))}
-        
-        {/* Main saving indicator */}
-        <motion.div
-          animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: [0, 5, -5, 0]
-          }}
-          transition={{ 
-            duration: 0.5,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        >
-          <Save className="w-24 h-24 text-rose-500 animate-pulse" />
-        </motion.div>
-        
-        {/* Text overlay */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-6 text-center"
-        >
-          <h2 className="text-2xl font-bold text-rose-600 flex items-center justify-center space-x-2">
-            <Lock className="w-6 h-6 text-amber-400" />
-            <span>Saving Your Love Story</span>
-            <Lock className="w-6 h-6 text-amber-400" />
-          </h2>
-          <p className="text-rose-500 mt-2 flex items-center justify-center">
-            Securely storing your heartfelt message 
-            <Heart className="w-4 h-4 ml-2 animate-bounce text-rose-400" />
-          </p>
-        </motion.div>
-      </div>
-    </motion.div>
-  )
 
   const saveProposal = async (content: string, font: string) => {
     await throttledSave(content, font)
@@ -451,7 +373,7 @@ export function ProposalSteps() {
               </motion.div>
             )}
 
-            <div className="bg-white -mx-3 sm:-mx-9 p-4 md:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
+            {/* <div className="bg-white -mx-3 sm:-mx-9 p-4 md:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl"> */}
               {isGenerating ? (
                 <ProposalLoadingAnimation />
               ) : proposalData.generatedProposal ? (
@@ -476,7 +398,7 @@ export function ProposalSteps() {
                   No proposal generated yet. Try regenerating...
                 </p>
               )}
-            </div>
+            {/* </div> */}
           </motion.div>
         )}
 
@@ -488,14 +410,14 @@ export function ProposalSteps() {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
-            <h2 className="text-2xl font-bold text-gray-800">Your Final Proposal</h2>
+            <h2 className="text-2xl font-bold text-rose-600">Your Final Proposal</h2>
             
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
+            {/* <div className="bg-white p-4 sm:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl"> */}
               <RichTextProposal 
                 content={proposalData.editedProposal || ""}
                 className="prose-base sm:prose-lg"
               />
-            </div>
+            {/* </div> */}
 
             <div className="mt-8 pt-8 border-t">
               <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -523,6 +445,25 @@ export function ProposalSteps() {
             </Button>
           )}
           {step === 3 && proposalViewMode === "edit" && (
+            <Button
+              onClick={() => saveProposal(proposalData.generatedProposal || "", selectedFont)}
+              disabled={!proposalData.generatedProposal || isSaving}
+              className="flex-1"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Proposal
+                </>
+              )}
+            </Button>
+          )}
+          {step === 3 && proposalViewMode === "preview" && (
             <Button
               onClick={() => saveProposal(proposalData.generatedProposal || "", selectedFont)}
               disabled={!proposalData.generatedProposal || isSaving}
@@ -572,63 +513,201 @@ export function ProposalSteps() {
           )}
         </div>
       </div>
-
-      {/* Desktop Navigation */}
-      <div className="hidden sm:flex justify-between mt-8">
-        {step > 1 && step < 4 && (
-          <Button variant="outline" onClick={handleBack}>
-            Back
-          </Button>
-        )}
-        {step === 3 && proposalViewMode === "edit" && (
-          <Button
-            onClick={() => saveProposal(proposalData.generatedProposal || "", selectedFont)}
-            disabled={!proposalData.generatedProposal || isSaving}
-            className="ml-auto"
-          >
-            {isSaving ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Proposal
-              </>
-            )}
-          </Button>
-        )}
-        {step < 3 && (
-          <Button
-            className={cn("ml-auto", step === 1 && "w-full")}
-            onClick={handleNext}
-            disabled={
-              (step === 1 && !proposalData.aboutYou) ||
-              (step === 2 && !proposalData.aboutThem) ||
-              isGenerating
-            }
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                {step === 2 ? (
-                  <>
-                    <Heart className="w-4 h-4 mr-2" />
-                    Generate Proposal
-                  </>
-                ) : (
-                  "Continue"
-                )}
-              </>
-            )}
-          </Button>
-        )}
-      </div>
     </div>
+  )
+}
+
+const SaveAnimation = () => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        delayChildren: 0.2,
+        staggerChildren: 0.1
+      }
+    }
+  }
+
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      scale: 0.5,
+      y: 50
+    },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 10
+      }
+    }
+  }
+
+  const heartVariants: Variants = {
+    initial: { 
+      scale: 0.8, 
+      opacity: 0.6,
+      rotate: 0
+    },
+    animate: {
+      scale: [0.8, 1.2, 0.9],
+      opacity: [0.6, 1, 0.7],
+      rotate: [0, 15, -15, 0],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        repeatType: "reverse"
+      }
+    }
+  }
+
+
+  return (
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center"
+      style={{ 
+        background: 'linear-gradient(135deg, rgba(255,105,180,0.1) 0%, rgba(255,20,147,0.2) 100%)',
+        backdropFilter: 'blur(10px)'
+      }}
+    >
+      {/* Decorative Background Hearts */}
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ 
+            x: Math.random() * window.innerWidth, 
+            y: -100,
+            opacity: 0,
+            scale: Math.random() * 0.5 + 0.5
+          }}
+          animate={{ 
+            y: window.innerHeight + 100,
+            x: [
+              Math.random() * window.innerWidth, 
+              Math.random() * window.innerWidth, 
+              Math.random() * window.innerWidth
+            ],
+            opacity: [0, 0.3, 0],
+            rotate: 360
+          }}
+          transition={{
+            duration: Math.random() * 10 + 10,
+            repeat: Infinity,
+            repeatType: "loop"
+          }}
+          className="absolute"
+        >
+          <motion.svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="30" 
+            height="30" 
+            viewBox="0 0 24 24" 
+            fill="rgba(255,105,180,0.3)"
+            variants={heartVariants}
+            initial="initial"
+            animate="animate"
+          >
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </motion.svg>
+        </motion.div>
+      ))}
+
+      {/* Main Content */}
+      <motion.div 
+        variants={itemVariants}
+        className="relative text-center max-w-md p-8 bg-white/80 rounded-2xl shadow-2xl border border-rose-100"
+      >
+        <motion.div
+          variants={itemVariants}
+          className="absolute -top-12 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="80" 
+            height="80" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="1.5" 
+            className="text-rose-500"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ 
+              scale: [0.8, 1.2, 1],
+              opacity: 1,
+              rotate: [0, 10, -10, 0]
+            }}
+            transition={{
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+          >
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </motion.svg>
+        </motion.div>
+
+        <motion.h2 
+          variants={itemVariants}
+          className="text-2xl font-bold text-rose-600 mt-12 mb-4"
+        >
+          Saving Your Love Story
+        </motion.h2>
+
+        <motion.p 
+          variants={itemVariants}
+          className="text-gray-700 mb-6 text-sm"
+        >
+          Your heartfelt message is being securely stored with love and care
+        </motion.p>
+
+        <motion.div 
+          variants={itemVariants}
+          className="flex justify-center space-x-4"
+        >
+          <motion.div
+            className="w-2 h-2 bg-rose-300 rounded-full"
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.6, 1, 0.6]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity
+            }}
+          />
+          <motion.div
+            className="w-2 h-2 bg-rose-400 rounded-full"
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.6, 1, 0.6]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              delay: 0.3
+            }}
+          />
+          <motion.div
+            className="w-2 h-2 bg-rose-500 rounded-full"
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.6, 1, 0.6]
+            }}
+            transition={{
+              duration: 1.5,
+              repeat: Infinity,
+              delay: 0.6
+            }}
+          />
+        </motion.div>
+      </motion.div>
+    </motion.div>
   )
 }

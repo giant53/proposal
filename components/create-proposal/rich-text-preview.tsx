@@ -42,16 +42,18 @@ export function RichTextPreview({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-4"
+      className="space-y-4 -mx-12"
     >
-      {onFontChange && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 p-3 sm:p-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 p-3 sm:p-0">
+        {onFontChange && (
           <div className="flex items-center space-x-2">
             <Type className="w-4 h-4 text-rose-500" />
             <span className="text-sm text-gray-600">Choose Font Style</span>
           </div>
+        )}
+        {onFontChange && (
           <Select value={font} onValueChange={onFontChange}>
-            <SelectTrigger className="w-full text-sm sm:text-base p-2 sm:p-3">
+            <SelectTrigger className="w-[200px] text-sm sm:text-base p-2 sm:p-3">
               <SelectValue placeholder="Select Font" />
             </SelectTrigger>
             <SelectContent>
@@ -81,8 +83,8 @@ export function RichTextPreview({
               </SelectGroup>
             </SelectContent>
           </Select>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className={cn(
         "relative bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl border border-rose-100/50",

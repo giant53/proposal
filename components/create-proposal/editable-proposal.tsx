@@ -109,7 +109,7 @@ export function EditableProposal({
         )}
         placeholder="Edit your proposal here..."
       />
-      <Button
+      {/* <Button
         onClick={handleSave}
         disabled={isSaving}
         className="w-full bg-rose-500 hover:bg-rose-600"
@@ -125,7 +125,7 @@ export function EditableProposal({
             Save Proposal
           </>
         )}
-      </Button>
+      </Button> */}
     </motion.div>
   )
 }
