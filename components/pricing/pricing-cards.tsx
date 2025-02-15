@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -9,12 +10,7 @@ import { useState } from "react"
 import { cn } from "@/lib/utils"
 
 interface PricingCardsProps {
-  user: {
-    subscriptionTier: string
-    subscriptionStatus?: string
-    remainingCredits: number
-    currentPeriodEnd?: Date
-  } | null
+  user: any
   plans: {
     tier: string
     name: string
@@ -25,15 +21,26 @@ interface PricingCardsProps {
     credits: number
     highlight: boolean
   }[]
+  onPremiumClick?: (tier: string) => void
 }
 
-export function PricingCards({ user, plans }: PricingCardsProps) {
+export function PricingCards({ 
+  user, 
+  plans, 
+  onPremiumClick 
+}: PricingCardsProps) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
   const onSubscribe = async (planId: string) => {
     try {
       setLoading(planId)
+      // For India, show waitlist dialog instead of subscription
+      if (planId !== "FREE") {
+        onPremiumClick?.(planId)
+        return
+      }
+
       const response = await fetch("/api/subscriptions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -61,12 +68,13 @@ export function PricingCards({ user, plans }: PricingCardsProps) {
           transition={{ duration: 0.4, delay: index * 0.1 }}
         >
           <Card className={cn(
-            "relative flex flex-col p-8 h-full",
-            plan.highlight && "border-2 border-primary shadow-lg"
+            "relative flex flex-col p-6 sm:p-8 h-full",
+            "transition-all duration-300 hover:shadow-lg",
+            plan.highlight && "border-2 border-rose-500 shadow-lg"
           )}>
             {plan.highlight && (
               <div className="absolute -top-5 left-0 right-0 mx-auto w-fit">
-                <span className="bg-primary text-primary-foreground text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
+                <span className="bg-rose-500 text-white text-sm font-medium px-3 py-1 rounded-full flex items-center gap-1">
                   <Sparkles className="w-4 h-4" />
                   Most Popular
                 </span>
@@ -74,20 +82,20 @@ export function PricingCards({ user, plans }: PricingCardsProps) {
             )}
 
             <div className="flex-1">
-              <h3 className="text-2xl font-bold">{plan.name}</h3>
-              <p className="mt-2 text-muted-foreground">{plan.description}</p>
+              <h3 className="text-xl sm:text-2xl font-bold">{plan.name}</h3>
+              <p className="mt-2 text-muted-foreground text-sm sm:text-base">{plan.description}</p>
               
               <div className="mt-4">
-                <span className="text-4xl font-bold">${plan.price}</span>
+                <span className="text-3xl sm:text-4xl font-bold">${plan.price}</span>
                 {plan.interval !== "lifetime" && (
                   <span className="text-muted-foreground">/{plan.interval}</span>
                 )}
               </div>
 
-              <div className="mt-6 space-y-4">
+              <div className="mt-6 space-y-3 sm:space-y-4">
                 {plan.features.map((feature) => (
-                  <div key={feature} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-primary" />
+                  <div key={feature} className="flex items-center gap-2 text-sm sm:text-base">
+                    <Check className="w-4 h-4 text-rose-500 flex-shrink-0" />
                     <span>{feature}</span>
                   </div>
                 ))}
@@ -102,22 +110,25 @@ export function PricingCards({ user, plans }: PricingCardsProps) {
               ) : (
                 <Button 
                   variant={plan.highlight ? "default" : "outline"}
-                  className="w-full"
+                  className={cn(
+                    "w-full",
+                    plan.highlight && "bg-rose-500 hover:bg-rose-600"
+                  )}
                   onClick={() => onSubscribe(plan.tier)}
                   disabled={loading === plan.tier}
                 >
                   {loading === plan.tier ? (
                     "Processing..."
-                  ) : plan.interval === "lifetime" ? (
-                    "Get Lifetime Access"
+                  ) : plan.tier === "FREE" ? (
+                    "Get Started Free"
                   ) : (
-                    `Get Started${plan.price === 0 ? "" : ` - $${plan.price}/${plan.interval}`}`
+                    "Join Waitlist"
                   )}
                 </Button>
               )}
-              {plan.interval !== "lifetime" && (
-                <p className="mt-2 text-sm text-center text-muted-foreground">
-                  Cancel anytime
+              {plan.interval !== "lifetime" && plan.tier === "FREE" && (
+                <p className="mt-2 text-xs sm:text-sm text-center text-muted-foreground">
+                  No credit card required
                 </p>
               )}
             </div>

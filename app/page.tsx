@@ -100,12 +100,12 @@ export default function Home() {
       </div>
 
       {/* Hero Section with Video Background */}
-      <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <div className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
         {/* Video Background */}
         <div className="absolute inset-0 w-full h-full">
           {/* Dark overlay to improve text visibility */}
           <div className="absolute inset-0 bg-black/40 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-rose-200 via-rose-200 to-pink-200 backdrop-blur-sm z-10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-rose-50 via-rose-50 to-pink-50 backdrop-blur-sm z-10" />
           <video
             autoPlay
             loop
@@ -194,7 +194,7 @@ export default function Home() {
             
             {/* Subheadline */}
             <motion.p 
-              className="text-lg sm:text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed px-4 drop-shadow-xl"
+              className="text-lg sm:text-md md:text-lg text-gray-600 max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed px-4 drop-shadow-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
@@ -202,33 +202,6 @@ export default function Home() {
               Create a magical moment that will last forever with our AI-powered
               proposal platform. Because your love story deserves to be told beautifully.
             </motion.p>
-
-            {/* Romantic Stats */}
-            <motion.div 
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              {[
-                { number: "1000+", label: "Proposals" },
-                { number: "98%", label: "Success Rate" },
-                { number: "50+", label: "Templates" },
-                { number: "24/7", label: "Support" }
-              ].map((stat, index) => (
-                <div 
-                  key={index} 
-                  className="text-center p-4 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 shadow-lg"
-                >
-                  <p className="text-2xl sm:text-3xl font-bold text-white drop-shadow-md">
-                    {stat.number}
-                  </p>
-                  <p className="text-xs sm:text-sm text-white/80">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </motion.div>
 
             {/* CTA Buttons */}
             <motion.div 
@@ -251,7 +224,7 @@ export default function Home() {
                 asChild
                 variant="secondary"
                 size="lg"
-                className="bg-white/20 hover:bg-white/30 text-rose-500 backdrop-blur-md shadow-xl transform hover:scale-101 transition-all duration-300 w-full sm:w-auto"
+                className="bg-white/90 hover:bg-white/70 text-rose-500 backdrop-blur-md shadow-xl transform hover:scale-101 transition-all duration-300 w-full sm:w-auto"
               >
                 <Link href="#how-it-works" className="flex items-center px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg">
                   <span className="mr-2">✨</span>
@@ -259,6 +232,34 @@ export default function Home() {
                 </Link>
               </Button>
             </motion.div>
+            {/* Romantic Stats */}
+            <motion.div 
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              {[
+                { number: "1000+", label: "Proposals" },
+                { number: "98%", label: "Success Rate" },
+                { number: "50+", label: "Templates" },
+                { number: "24/7", label: "Support" }
+              ].map((stat, index) => (
+                <div 
+                  key={index} 
+                  className="text-center p-4 rounded-xl bg-white/90 backdrop-blur-md border border-white/20 shadow-lg"
+                >
+                  <p className="text-2xl sm:text-3xl font-bold text-rose-600 drop-shadow-md">
+                    {stat.number}
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
+            </motion.div>
+
+            
           </motion.div>
         </div>
       </div>
@@ -333,8 +334,8 @@ export default function Home() {
                   </p>
 
                   {/* Decorative elements */}
-                  <div className="absolute -bottom-2 -right-2 w-20 h-20 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
-                    <Heart className="w-full h-full" />
+                  <div className="absolute -bottom-2 -right-2 w-20 h-20 opacity-50 group-hover:opacity-90 transition-opacity duration-300">
+                    <Image src="/wlogo.svg" alt="Dancing Script" width={80} height={80} />
                   </div>
                 </div>
               </motion.div>

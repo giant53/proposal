@@ -54,34 +54,34 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
   }
 
   return (
-    <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
-      <div className="space-y-4">
+    <form onSubmit={handleSubmit} className={cn("space-y-4 sm:space-y-6", className)}>
+      <div className="space-y-3 sm:space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">Recipient&apos;s Name</Label>
+          <Label htmlFor="name" className="text-sm sm:text-base">Recipient&apos;s Name</Label>
           <Input
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter their name"
             required
-            className="transition-all duration-200 focus:ring-rose-500"
+            className="transition-all duration-200 focus:ring-rose-500 text-sm sm:text-base p-2 sm:p-3"
           />
         </div>
 
         <div className="space-y-2">
-          <Label>Delivery Methods (Select one or more)</Label>
-          <div className="grid grid-cols-3 gap-4">
+          <Label className="text-sm sm:text-base">Delivery Methods (Select one or more)</Label>
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <Button
               type="button"
               variant={methods.includes("EMAIL") ? "default" : "outline"}
               className={cn(
-                "flex-col py-4 h-auto gap-2",
+                "flex-col py-2 sm:py-4 h-auto gap-1 sm:gap-2 text-xs sm:text-sm",
                 methods.includes("EMAIL") && "bg-rose-500 hover:bg-rose-600"
               )}
               onClick={() => toggleMethod("EMAIL")}
             >
-              <Mail className="w-5 h-5" />
-              <span className="text-sm">Email</span>
+              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span>Email</span>
             </Button>
             <motion.div
               initial={{ opacity: 0.6 }}
@@ -92,10 +92,10 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
                 type="button"
                 disabled
                 variant="outline"
-                className="flex-col py-4 h-auto gap-2 w-full opacity-70 cursor-not-allowed relative"
+                className="flex-col py-2 sm:py-4 h-auto gap-1 sm:gap-2 w-full opacity-70 cursor-not-allowed relative text-xs sm:text-sm"
               >
-                <Mail className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-400">SMS</span>
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                <span>SMS</span>
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -115,10 +115,10 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
                 type="button"
                 disabled
                 variant="outline"
-                className="flex-col py-4 h-auto gap-2 w-full opacity-50 cursor-not-allowed relative"
+                className="flex-col py-2 sm:py-4 h-auto gap-1 sm:gap-2 w-full opacity-50 cursor-not-allowed relative text-xs sm:text-sm"
               >
-                <FaWhatsapp className="w-5 h-5 text-gray-400" />
-                <span className="text-sm text-gray-400">WhatsApp</span>
+                <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                <span>WhatsApp</span>
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -133,9 +133,9 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-gray-500 mt-2 text-center"
+            className="text-xs text-gray-500 mt-2 text-center px-2 sm:px-0"
           >
-            📣 SMS and WhatsApp delivery options are coming soon! We&apos;re working hard to expand your proposal delivery methods.
+            📣 SMS and WhatsApp delivery options are coming soon!
           </motion.p>
         </div>
 
@@ -147,7 +147,7 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
             exit={{ opacity: 0, y: -20 }}
             className="space-y-2"
           >
-            <Label htmlFor="email">Email Address</Label>
+            <Label htmlFor="email" className="text-sm sm:text-base">Email Address</Label>
             <Input
               id="email"
               type="email"
@@ -155,7 +155,7 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter their email"
               required
-              className="transition-all duration-200 focus:ring-rose-500"
+              className="transition-all duration-200 focus:ring-rose-500 text-sm sm:text-base p-2 sm:p-3"
             />
           </motion.div>
         </AnimatePresence>

@@ -45,10 +45,13 @@ export function RichTextPreview({
       className="space-y-4"
     >
       {onFontChange && (
-        <div className="flex items-center space-x-2 mb-4">
-          <Type className="w-4 h-4 text-rose-500" />
+        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-4 p-3 sm:p-0">
+          <div className="flex items-center space-x-2">
+            <Type className="w-4 h-4 text-rose-500" />
+            <span className="text-sm text-gray-600">Choose Font Style</span>
+          </div>
           <Select value={font} onValueChange={onFontChange}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-full text-sm sm:text-base p-2 sm:p-3">
               <SelectValue placeholder="Select Font" />
             </SelectTrigger>
             <SelectContent>
@@ -82,24 +85,24 @@ export function RichTextPreview({
       )}
 
       <div className={cn(
-        "relative bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-rose-100/50",
+        "relative bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl border border-rose-100/50",
         "text-gray-800 leading-relaxed tracking-wide",
         "max-w-4xl mx-auto",
         font,
         className
       )}>
         {/* Decorative hearts and sparkles */}
-        <div className="absolute top-4 right-4 flex space-x-2 opacity-50">
-          <Heart className="w-6 h-6 text-rose-400 animate-pulse" />
-          <Sparkles className="w-6 h-6 text-amber-400 animate-spin" />
+        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 flex space-x-2 opacity-50">
+          <Heart className="w-4 h-4 sm:w-6 sm:h-6 text-rose-400 animate-pulse" />
+          <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-amber-400 animate-spin" />
         </div>
 
         {/* Love letter style header */}
-        <div className="text-center mb-6 border-b border-rose-200 pb-4">
-          <h2 className={cn("text-3xl font-bold text-rose-600 tracking-wider", font)}>
+        <div className="text-center mb-4 sm:mb-6 border-b border-rose-200 pb-3 sm:pb-4">
+          <h2 className={cn("text-2xl sm:text-3xl font-bold text-rose-600 tracking-wider", font)}>
             My Love Letter
           </h2>
-          <p className="text-sm text-rose-500 italic">A heartfelt message just for you</p>
+          <p className="text-xs sm:text-sm text-rose-500 italic">A heartfelt message just for you</p>
         </div>
 
         {/* Markdown Rendering */}

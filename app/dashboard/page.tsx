@@ -5,16 +5,17 @@ import { redirect } from "next/navigation"
 import { ProposalList } from "@/components/proposal-list"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { 
   Heart, 
   PlusCircle, 
   Gift, 
-  Calendar, 
   Sparkles, 
   Star, 
   ArrowRight, 
-  Lock 
+  Lock,
+  HeartPulse,
+  Flower
 } from "lucide-react"
 import { useState } from "react"
 
@@ -26,10 +27,17 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white flex items-center justify-center">
         <motion.div
-          animate={{ scale: [1, 1.1, 1] }}
-          transition={{ repeat: Infinity, duration: 1 }}
+          animate={{ 
+            scale: [1, 1.1, 1],
+            rotate: [0, 5, -5, 0]
+          }}
+          transition={{ 
+            repeat: Infinity, 
+            duration: 1,
+            ease: "easeInOut"
+          }}
         >
-          <Heart className="w-16 h-16 text-rose-500 animate-pulse" />
+          <HeartPulse className="w-24 h-24 text-rose-500 animate-pulse" />
         </motion.div>
       </div>
     )
@@ -39,32 +47,19 @@ export default function DashboardPage() {
     redirect("/login")
   }
 
-  const daysUntilValentines = Math.max(0, Math.ceil((new Date(2025, 1, 14).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
+  // const daysUntilValentines = Math.max(0, Math.ceil((new Date(2025, 1, 14).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white">
       {/* Valentine's Day Countdown */}
-      <motion.div
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="bg-gradient-to-r from-rose-500 to-pink-600 text-white py-3 shadow-lg"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center space-x-2">
-            <Calendar className="w-5 h-5 animate-pulse" />
-            <span className="text-sm font-bold">
-              {daysUntilValentines} days until Valentine&apos;s Day!
-            </span>
-          </div>
-        </div>
-      </motion.div>
+     
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Welcome Section with Premium Upsell */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative bg-white rounded-3xl shadow-2xl p-6 mb-8 overflow-hidden border-4 border-rose-100"
+          className="relative bg-white rounded-3xl shadow-2xl p-4 sm:p-6 mb-4 overflow-hidden border-4 border-rose-100"
         >
           {/* Floating Hearts Background */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -101,12 +96,12 @@ export default function DashboardPage() {
           </div>
           
           <div className="relative z-10">
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center">
-              Welcome back, {session.user.name}! 
-              <Star className="ml-2 w-6 h-6 text-amber-400 animate-pulse" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center flex-wrap gap-2">
+              <span>Welcome back, {session.user.name?.split(' ')[0] || 'Lover'}!</span>
+              <Star className="w-6 h-6 text-amber-400 animate-pulse" />
             </h1>
-            <p className="text-gray-600 mt-2">
-              Create magical moments that last forever
+            <p className="text-gray-600 mt-2 text-sm sm:text-base">
+              Create magical moments that last forever ✨
             </p>
             
             <div className="mt-6 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
@@ -132,21 +127,23 @@ export default function DashboardPage() {
             </div>
 
             {/* Premium Features Teaser */}
-            <div className="mt-6 bg-rose-50 rounded-2xl p-4 flex items-center justify-between">
+            <div className="mt-6 bg-rose-50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex items-center space-x-3">
                 <Lock className="w-6 h-6 text-rose-500" />
                 <div>
-                  <h3 className="font-semibold text-gray-800">Unlock Premium Features</h3>
-                  <p className="text-sm text-gray-600">Get unlimited proposals, custom themes, and more!</p>
+                  <h3 className="font-semibold text-gray-800 text-sm sm:text-base">Unlock Premium Features</h3>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    Unlimited proposals, custom themes, and more!
+                  </p>
                 </div>
               </div>
               <Button 
                 asChild 
                 size="sm" 
                 variant="outline" 
-                className="border-rose-300 text-rose-600 hover:bg-rose-100"
+                className="border-rose-300 text-rose-600 hover:bg-rose-100 w-full sm:w-auto"
               >
-                <Link href="/premium" className="flex items-center">
+                <Link href="/premium" className="flex items-center justify-center">
                   Upgrade 
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
@@ -160,28 +157,37 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mb-6 flex justify-center space-x-4"
+          className="mb-4 flex justify-center space-x-2 sm:space-x-4 overflow-x-auto"
         >
-          {[
-            { key: 'all', label: 'All Proposals', icon: Heart },
-            { key: 'sent', label: 'Sent', icon: PlusCircle },
-            { key: 'received', label: 'Received', icon: Gift }
-          ].map(({ key, label, icon: Icon }) => (
-            <Button
-              key={key}
-              variant={activeTab === key ? 'default' : 'outline'}
-              className={`
-                ${activeTab === key 
-                  ? 'bg-rose-500 text-white' 
-                  : 'border-rose-200 text-rose-600 hover:bg-rose-50'
-                } flex items-center space-x-2
-              `}
-              onClick={() => setActiveTab(key as 'all' | 'sent' | 'received')}
-            >
-              <Icon className="w-4 h-4" />
-              <span>{label}</span>
-            </Button>
-          ))}
+          <AnimatePresence>
+            {[
+              { key: 'all', label: 'All', icon: Heart },
+              { key: 'sent', label: 'Sent', icon: PlusCircle },
+              { key: 'received', label: 'Received', icon: Gift }
+            ].map(({ key, label, icon: Icon }) => (
+              <motion.div
+                key={key}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <Button
+                  variant={activeTab === key ? 'default' : 'outline'}
+                  className={`
+                    ${activeTab === key 
+                      ? 'bg-rose-500 text-white' 
+                      : 'border-rose-200 text-rose-600 hover:bg-rose-50'
+                    } flex items-center space-x-2 text-xs sm:text-sm px-3 sm:px-4 py-2
+                  `}
+                  onClick={() => setActiveTab(key as 'all' | 'sent' | 'received')}
+                >
+                  <Icon className="w-4 h-4 mr-1" />
+                  {label}
+                </Button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </motion.div>
 
         {/* Proposals List */}
@@ -189,9 +195,10 @@ export default function DashboardPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white rounded-3xl shadow-2xl p-6 border-4 border-rose-100"
+          className="bg-white rounded-3xl shadow-2xl p-4 sm:p-6 border-4 border-rose-100"
         >
-          <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6 flex items-center">
+            <Flower className="mr-2 w-5 h-5 text-rose-500" />
             <span>Your Love Stories</span>
             <Sparkles className="ml-2 w-5 h-5 text-amber-400" />
           </h2>

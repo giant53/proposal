@@ -275,14 +275,14 @@ export function ProposalSteps() {
   const [selectedFont, setSelectedFont] = useState("font-dancing-script")
 
   return (
-    <div className="w-full max-w-[800px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="w-full max-w-[800px] mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 mb-20 sm:mb-0">
       {/* Save Animation Overlay */}
       <AnimatePresence>
         {isSaving && <SaveAnimation />}
       </AnimatePresence>
 
       {/* Progress Steps */}
-      <div className="flex justify-between items-center mb-8 space-x-2">
+      <div className="flex justify-between items-center mb-6 sm:mb-8 space-x-1 sm:space-x-2">
         {[1, 2, 3, 4].map((number) => (
           <div
             key={number}
@@ -327,8 +327,8 @@ export function ProposalSteps() {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-4"
           >
-            <h2 className="text-2xl font-bold text-gray-800">Tell me about yourself</h2>
-            <p className="text-gray-600">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Tell me about yourself</h2>
+            <p className="text-gray-600 text-sm sm:text-base">
               Share a bit about who you are, your personality, and what makes you unique.
             </p>
             <Textarea
@@ -451,7 +451,7 @@ export function ProposalSteps() {
               </motion.div>
             )}
 
-            <div className="bg-white -mx-9 md:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
+            <div className="bg-white -mx-3 sm:-mx-9 p-4 md:p-6 rounded-xl shadow-lg border border-rose-100/50 transition-all duration-300 hover:shadow-xl">
               {isGenerating ? (
                 <ProposalLoadingAnimation />
               ) : proposalData.generatedProposal ? (
@@ -511,8 +511,8 @@ export function ProposalSteps() {
       </AnimatePresence>
 
       {/* Mobile Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-2xl z-50 p-4 sm:hidden">
-        <div className="flex justify-between space-x-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-2xl z-50 p-3 sm:p-4 border-t border-gray-100">
+        <div className="flex justify-between space-x-3 sm:space-x-4 max-w-[800px] mx-auto">
           {step > 1 && step < 4 && (
             <Button 
               variant="outline" 
