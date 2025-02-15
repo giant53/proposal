@@ -15,6 +15,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AcquisitionDialog } from "@/components/acquisition/acquisition-dialog";
+import { AcquisitionBanner } from "@/components/acquisition/acquisition-banner";
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
@@ -486,6 +488,7 @@ export default function Home() {
         </div>
       </div>
 
+      
       {/* Final CTA Section */}
       <div className="py-16 sm:py-24 bg-gradient-to-b from-rose-50/30 to-transparent">
         <div className="container mx-auto px-4 sm:px-6 text-center">
@@ -516,6 +519,10 @@ export default function Home() {
           </motion.div>
         </div>
       </div>
+      {/* Acquisition Banner */}
+      <AcquisitionBanner />
+
+      <AcquisitionDialog />
     </motion.div>
   );
 }
