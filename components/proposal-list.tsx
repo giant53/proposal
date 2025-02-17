@@ -156,36 +156,36 @@ export function ProposalList({ filter = 'all' }: ProposalListProps) {
   return (
     <div className="space-y-4">
       {filteredProposals.map((proposal, index) => (
-        <motion.div
+        <Link 
           key={proposal.id}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.1 }}
-          className="bg-rose-50 rounded-2xl p-4 flex items-center justify-between hover:bg-rose-100 transition"
+          href={`/proposals/${proposal.id}`} 
+          className="block"
         >
-          <div className="flex items-center space-x-4">
-            {getStatusIcon(proposal.status)}
-            <div>
-              <h3 className="font-semibold text-gray-800 line-clamp-1">
-                {proposal.recipient 
-                  ? `To: ${proposal.recipient.name}` 
-                  : 'Draft Proposal'}
-              </h3>
-              <p className="text-sm text-gray-600 line-clamp-1">
-                {proposal.message.slice(0, 50)}...
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {format(new Date(proposal.createdAt), 'PPP')}
-              </p>
-            </div>
-          </div>
-          <Link 
-            href={`/proposals/${proposal.id}`} 
-            className="text-rose-500 hover:text-rose-600 transition"
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="bg-rose-50 rounded-2xl p-4 flex items-center justify-between hover:bg-rose-100 transition cursor-pointer"
           >
-            <Heart className="w-6 h-6" />
-          </Link>
-        </motion.div>
+            <div className="flex items-center space-x-4">
+              {getStatusIcon(proposal.status)}
+              <div>
+                <h3 className="font-semibold text-gray-800 line-clamp-1">
+                  {proposal.recipient 
+                    ? `To: ${proposal.recipient.name}` 
+                    : 'Draft Proposal'}
+                </h3>
+                <p className="text-sm text-gray-600 line-clamp-1">
+                  {proposal.message.slice(0, 50)}...
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {format(new Date(proposal.createdAt), 'PPP')}
+                </p>
+              </div>
+            </div>
+            <Heart className="w-6 h-6 text-rose-500 hover:text-rose-600 transition" />
+          </motion.div>
+        </Link>
       ))}
     </div>
   )

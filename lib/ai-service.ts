@@ -8,29 +8,47 @@ const openai = new OpenAI({
 
 const gemini = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
-// In ai-service.ts
 const PROMPT_TEMPLATES = {
-  base: `You are a professional romance writer crafting a deeply personal valentine proposal. Create content that:
-1. Feels handwritten from the heart with raw, vulnerable emotions
-2. Uses specific details from their relationship history
-3. Incorporates meaningful metaphors related to their journey
-4. Includes 2-3 intimate moments only they would understand
-5. Uses natural, conversational language with occasional imperfections
-6. Follows this emotional arc:
-   - Nostalgic beginning (remembering first meeting)
-   - Vulnerable middle (sharing fears/hopes)
-   - Poetic climax (actual proposal)
-   - Hopeful ending (imagining future)
-7. Format using Markdown for emphasis without markdown syntax:
-   **Bold** for key emotional phrases
-   *Italic* for intimate moments
-   - Bullet points for promises
-   > Quotes for meaningful memories
-8. Better to give a modern tone of love that feels permium and latest trend of 2025
+  system: `You are a proposal writer crafting intimate, personalized love letters. Generate ONLY the proposal text. Never include explanations, meta-commentary, or AI-related text.
 
-Avoid clichés like "soulmate" or "meant to be". Focus on unique, personal details that feel authentically human.`,
+Format Rules:
+- Begin directly with the proposal
+- No introductions or conclusions about the writing process
+- No "Here's your proposal" or similar meta-text
+- Include only human-written style content
+- Never use markdown syntax markers (**, *, -)
+
+Writing Style:
+1. Intimate but tasteful tone
+2. Modern, 2025-appropriate language
+3. Personal details woven naturally
+4. Emotional authenticity
+5. Occasional natural pauses (...) and meaningful silences
+6. Em dashes for emotional transitions
+
+Structure (without marking sections):
+1. Opening: A cherished memory
+2. Middle: Growth of love
+3. Climax: The proposal moment
+4. Close: Shared future vision
+
+Required Elements:
+- One specific shared memory
+- Two sensory details
+- One private joke or moment
+- Three specific personal details from their story
+- One future dream they've discussed`,
+
+  user: (aboutYou: string, aboutThem: string) => `Context for Natural Integration:
+
+Their Story:
+${sanitizeInput(aboutYou)}
+
+Relationship Details:
+${sanitizeInput(aboutThem)}
+
+Generate only the proposal. Start immediately with the content. No explanations.`
 }
-
 
 export async function generateProposal(
   model: AIModel,
@@ -54,22 +72,24 @@ async function generateOpenAIProposal(
   aboutThem: string
 ): Promise<string> {
   const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model: "gpt-4-turbo-preview",
     messages: [
       {
         role: "system",
-        content: PROMPT_TEMPLATES.base,
+        content: PROMPT_TEMPLATES.system,
       },
       {
         role: "user",
-        content: generateUserPrompt(aboutYou, aboutThem),
-      },
+        content: PROMPT_TEMPLATES.user(aboutYou, aboutThem),
+      }
     ],
-    temperature: 0.7,
+    temperature: 0.8,
     max_tokens: 1000,
+    presence_penalty: 0.6,
+    frequency_penalty: 0.8,
   })
 
-  return completion.choices[0].message.content || ""
+  return completion.choices[0].message.content?.trim() || ""
 }
 
 async function generateGeminiProposal(
@@ -89,39 +109,26 @@ async function generateGeminiProposal(
           threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
         },
         {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
           category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
           threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
         },
       ],
     })
 
-    const prompt = `${PROMPT_TEMPLATES.base}
-
-    Context about the person proposing:
-    ${sanitizeInput(aboutYou)}
-
-    Context about their relationship:
-    ${sanitizeInput(aboutThem)}
-
-    Please write a beautiful valentines day proposal that incorporates these details while keeping the content appropriate and family-friendly.`
-
-    //const prompt = "Explain how AI works"
-    const result = await model.generateContent(prompt)
-    console.log(result)
-    const response = result.response
-
-    if (response.text().trim().length === 0) {
+    const result = await model.generateContent([
+      {text: PROMPT_TEMPLATES.system},
+      {text: PROMPT_TEMPLATES.user(aboutYou, aboutThem)}
+    ])
+    
+    const response = result.response.text().trim()
+    
+    if (response.length === 0) {
       throw new Error("Generated content was empty")
     }
 
-    return response.text()
+    return response
   } catch (error) {
     console.error("Gemini generation error:", error)
-    // Fallback to OpenAI if Gemini fails
     return generateOpenAIProposal(aboutYou, aboutThem)
   }
 }
@@ -130,31 +137,11 @@ async function generateDeepSeekProposal(
   aboutYou: string,
   aboutThem: string
 ): Promise<string> {
-  // For now, we'll use OpenAI as a fallback
   return generateOpenAIProposal(aboutYou, aboutThem)
 }
 
-function generateUserPrompt(aboutYou: string, aboutThem: string): string {
-  return `Craft a proposal that would make them say "This is SO us!" Include:
-  
-**Our Unique Story**
-- First meeting: ${sanitizeInput(aboutYou.split(' ').slice(0, 50).join(' '))}
-- Key moments: ${sanitizeInput(aboutThem.split('.').join(' - '))}
-
-**Love Language**
-- How we show affection: 
-- Secret gestures only we understand:
-
-**Future Vision**
-- What home means to us:
-- Shared dreams we whisper about:
-
-Write like you're trembling while holding the ring. Include 1 inside joke reference and 2 sensory details (their scent, a song lyric, etc.). Use em dashes—for interrupted thoughts and ... for emotional pauses.`
-}
-
 function sanitizeInput(input: string): string {
-  // Remove any potentially problematic characters or patterns
   return input
-    .replace(/[^\w\s.,!?-]/g, '') // Only allow basic punctuation and alphanumeric characters
+    .replace(/[^\w\s.,!?-]/g, '')
     .trim()
 }

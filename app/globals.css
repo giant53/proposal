@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Great+Vibes&family=Cormorant+Garamond:wght@400;500;600&family=Bodoni+Moda:wght@400;500;600&family=DM+Serif+Display&family=Libre+Baskerville:wght@400;700&family=Source+Serif+Pro:wght@400;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,7 +7,6 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
-
 
 @layer base {
   :root {
@@ -64,7 +65,6 @@ body {
   }
 }
 
-
 @layer base {
   * {
     @apply border-border;
@@ -77,5 +77,26 @@ body {
 @layer utilities {
   .animate-spin-slow {
     animation: spin 3s linear infinite;
+  }
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+  .font-great-vibes {
+    font-family: 'Great Vibes', cursive;
+  }
+  .font-cormorant {
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .font-bodoni {
+    font-family: 'Bodoni Moda', serif;
+  }
+  .font-dm-serif {
+    font-family: 'DM Serif Display', serif;
+  }
+  .font-libre-baskerville {
+    font-family: 'Libre Baskerville', serif;
+  }
+  .font-source-serif {
+    font-family: 'Source Serif Pro', serif;
   }
 }

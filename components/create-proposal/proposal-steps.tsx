@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Loader2, Heart, RefreshCw, Save } from "lucide-react"
 import { motion, AnimatePresence, Variants } from "framer-motion"
 import { ProposalLoadingAnimation } from "./loading-animation"
-import { ModelSelector } from "./model-selector"
+// import { ModelSelector } from "./model-selector"
 import { SendProposalForm } from "./send-proposal-form"
 import { RichTextProposal } from "./rich-text-proposal"
 import { EditableProposal } from "./editable-proposal"
@@ -15,7 +15,7 @@ import { RichTextPreview } from "./rich-text-preview"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { AIProposalResponse, ProposalFormData, SendProposalData } from "@/types/proposal"
-import { AIModel } from "@/types/ai-models"
+// import { AIModel } from "@/types/ai-models"
 
 export function ProposalSteps() {
   const [step, setStep] = useState(1)
@@ -277,11 +277,11 @@ export function ProposalSteps() {
               Share the beautiful story of your love - how you met, what makes them special,
               and why they mean so much to you.
             </p>
-            <ModelSelector
+            {/* <ModelSelector
               value={proposalData.model as AIModel}
               onChange={(model) => setProposalData((prev) => ({ ...prev, model }))}
               disabled={isGenerating}
-            />
+            /> */}
             <Textarea
               value={proposalData.aboutThem}
               onChange={(e) =>
@@ -367,7 +367,7 @@ export function ProposalSteps() {
               <motion.div 
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700"
+                className="bg-red-50 border border-red-200 rounded-lg py-3 text-sm text-red-700"
               >
                 {error}
               </motion.div>
@@ -622,7 +622,7 @@ const SaveAnimation = () => {
       {/* Main Content */}
       <motion.div 
         variants={itemVariants}
-        className="relative text-center max-w-md p-8 bg-white/80 rounded-2xl shadow-2xl border border-rose-100"
+        className="relative text-center max-w-md  p-0 bg-white/80 rounded-2xl shadow-2xl border border-rose-100"
       >
         <motion.div
           variants={itemVariants}

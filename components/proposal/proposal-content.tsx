@@ -13,16 +13,17 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import Image from "next/image"
 
 const fonts = [
-   // Standard Fonts
-   { value: "font-inter", label: "Inter", description: "Modern & Clean", category: "Standard" },
-   { value: "font-serif", label: "Serif", description: "Traditional & Elegant", category: "Standard" },
-   { value: "font-roboto", label: "Roboto", description: "Flexible & Modern", category: "Standard" },
-
-  // Romantic Fonts
-  { value: "font-dancing-script", label: "Dancing Script", description: "Elegant & Flowing", category: "Romantic" },
-  { value: "font-great-vibes", label: "Great Vibes", description: "Romantic & Classic", category: "Romantic" },
-  { value: "font-parisienne", label: "Parisienne", description: "Graceful & Delicate", category: "Romantic" },
-  { value: "font-lobster", label: "Lobster", description: "Cursive & Elegant", category: "Romantic" }, 
+  // Premium Romantic Fonts
+  { value: "font-great-vibes", label: "Great Vibes", description: "Luxurious & Romantic", category: "Romantic" },
+  { value: "font-playfair", label: "Playfair Display", description: "Elegant & Sophisticated", category: "Romantic" },
+  { value: "font-cormorant", label: "Cormorant Garamond", description: "Classic & Refined", category: "Romantic" },
+  { value: "font-bodoni", label: "Bodoni Moda", description: "Timeless & Luxurious", category: "Romantic" },
+  
+  // Modern Elegant Fonts
+  { value: "font-inter", label: "Inter", description: "Modern & Crisp", category: "Modern" },
+  { value: "font-dm-serif", label: "DM Serif Display", description: "Contemporary & Elegant", category: "Modern" },
+  { value: "font-libre-baskerville", label: "Libre Baskerville", description: "Sophisticated & Refined", category: "Modern" },
+  { value: "font-source-serif", label: "Source Serif Pro", description: "Professional & Polished", category: "Modern" },
 ]
 
 interface ProposalContentProps {
@@ -31,7 +32,7 @@ interface ProposalContentProps {
 }
 
 export function ProposalContent({ proposal, isCreator }: ProposalContentProps) {
-  const [selectedFont, setSelectedFont] = useState(proposal.font || "font-dancing-script")
+  const [selectedFont, setSelectedFont] = useState(proposal.font || "font-playfair")
 
   return (
     <div className="min-h-screen bg-rose-50">
@@ -75,9 +76,9 @@ export function ProposalContent({ proposal, isCreator }: ProposalContentProps) {
                   }
                 </SelectGroup>
                 <SelectGroup>
-                  <SelectLabel>Standard Fonts</SelectLabel>
+                  <SelectLabel>Modern Elegant Fonts</SelectLabel>
                   {fonts
-                    .filter(f => f.category === "Standard")
+                    .filter(f => f.category === "Modern")
                     .map((f) => (
                       <SelectItem key={f.value} value={f.value}>
                         <span className="block">{f.label}</span>

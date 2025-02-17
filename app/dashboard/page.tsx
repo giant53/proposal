@@ -12,8 +12,6 @@ import {
   Gift, 
   Sparkles, 
   Star, 
-  ArrowRight, 
-  Lock,
   HeartPulse,
   Flower
 } from "lucide-react"
@@ -90,10 +88,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Premium Upsell Badge */}
-          <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-400 to-pink-500 text-white px-3 py-1 rounded-full flex items-center space-x-1">
+          {/* <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-400 to-pink-500 text-white px-3 py-1 rounded-full flex items-center space-x-1">
             <Sparkles className="w-4 h-4" />
             <span className="text-xs font-bold">Premium</span>
-          </div>
+          </div> */}
           
           <div className="relative z-10">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center flex-wrap gap-2">
@@ -127,7 +125,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Premium Features Teaser */}
-            <div className="mt-6 bg-rose-50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+            {/* <div className="mt-6 bg-rose-50 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
               <div className="flex items-center space-x-3">
                 <Lock className="w-6 h-6 text-rose-500" />
                 <div>
@@ -143,12 +141,12 @@ export default function DashboardPage() {
                 variant="outline" 
                 className="border-rose-300 text-rose-600 hover:bg-rose-100 w-full sm:w-auto"
               >
-                <Link href="/premium" className="flex items-center justify-center">
+                <Link href="/pricing" className="flex items-center justify-center">
                   Upgrade 
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </Button>
-            </div>
+            </div> */}
           </div>
         </motion.div>
 

@@ -168,7 +168,7 @@ export function Footer() {
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
               <span className="text-gray-600 text-sm flex items-center">
-                Made with <FaHeart className="w-4 h-4 text-rose-500 mx-1" /> at localhost:3000
+                Made with <FaHeart className="w-4 h-4 text-rose-500 mx-1" /> by <Link href="https://x.com/awesome_v0" target="_blank" className="ml-2 text-rose-500">awesome_v0</Link>
               </span>
             </div>
           </div>

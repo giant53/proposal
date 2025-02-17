@@ -19,24 +19,24 @@ interface EditableProposalProps {
 }
 
 const fonts = [
-  // Romantic Fonts
-  { value: "font-dancing-script", label: "Dancing Script", description: "Elegant & Flowing", category: "Romantic" },
-  { value: "font-great-vibes", label: "Great Vibes", description: "Romantic & Classic", category: "Romantic" },
-  { value: "font-parisienne", label: "Parisienne", description: "Graceful & Delicate", category: "Romantic" },
-  { value: "font-lobster", label: "Lobster", description: "Cursive & Elegant", category: "Romantic" },
+  // Premium Romantic Fonts
+  { value: "font-great-vibes", label: "Great Vibes", description: "Luxurious & Romantic", category: "Romantic" },
+  { value: "font-playfair", label: "Playfair Display", description: "Elegant & Sophisticated", category: "Romantic" },
+  { value: "font-cormorant", label: "Cormorant Garamond", description: "Classic & Refined", category: "Romantic" },
+  { value: "font-bodoni", label: "Bodoni Moda", description: "Timeless & Luxurious", category: "Romantic" },
   
-  // Standard Fonts
-  { value: "font-inter", label: "Inter", description: "Modern & Clean", category: "Standard" },
-  { value: "font-serif", label: "Serif", description: "Traditional & Elegant", category: "Standard" },
-  { value: "font-mono", label: "Monospace", description: "Technical & Precise", category: "Standard" },
-  { value: "font-roboto", label: "Roboto", description: "Flexible & Modern", category: "Standard" },
+  // Modern Elegant Fonts
+  { value: "font-inter", label: "Inter", description: "Modern & Crisp", category: "Modern" },
+  { value: "font-dm-serif", label: "DM Serif Display", description: "Contemporary & Elegant", category: "Modern" },
+  { value: "font-libre-baskerville", label: "Libre Baskerville", description: "Sophisticated & Refined", category: "Modern" },
+  { value: "font-source-serif", label: "Source Serif Pro", description: "Professional & Polished", category: "Modern" },
 ]
 
 export function EditableProposal({
   content,
   onSave,
   className,
-  font = "font-dancing-script",
+  font = "font-playfair",
   onFontChange
 }: EditableProposalProps) {
   const [editedContent, setEditedContent] = useState(content)
@@ -61,7 +61,7 @@ export function EditableProposal({
       className={cn("space-y-4", className)}
     >
       {onFontChange && (
-        <div className="flex items-center space-x-2 mb-4">
+        <div className="flex items-center p-0 mb-4">
           <Type className="w-4 h-4 text-rose-500" />
           <Select value={font} onValueChange={onFontChange}>
             <SelectTrigger className="w-[200px]">
@@ -81,9 +81,9 @@ export function EditableProposal({
                 }
               </SelectGroup>
               <SelectGroup>
-                <SelectLabel>Standard Fonts</SelectLabel>
+                <SelectLabel>Modern Elegant Fonts</SelectLabel>
                 {fonts
-                  .filter(f => f.category === "Standard")
+                  .filter(f => f.category === "Modern")
                   .map((f) => (
                     <SelectItem key={f.value} value={f.value}>
                       <span className="block">{f.label}</span>
@@ -101,8 +101,8 @@ export function EditableProposal({
         value={editedContent}
         onChange={(e) => setEditedContent(e.target.value)}
         className={cn(
-          "min-h-[400px] text-lg leading-relaxed",
-          "bg-white p-6 rounded-lg border border-rose-100",
+          "min-h-[440px] text-lg leading-relaxed",
+          "bg-white rounded-lg border border-rose-100",
           "focus:ring-rose-200 focus:border-rose-300",
           font,
           className
