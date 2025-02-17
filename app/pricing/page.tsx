@@ -7,9 +7,70 @@ import { Button } from "@/components/ui/button"
 import { PricingCards } from "@/components/pricing/pricing-cards"
 import { PricingHeader } from "@/components/pricing/pricing-header"
 import { PremiumWaitlistDialog } from "@/components/pricing/premium-waitlist-dialog"
-import { Heart, Sparkles } from "lucide-react"
+import { Heart } from "lucide-react"
+import { useSession } from "next-auth/react"
+import { STRIPE_PRICE_IDS } from "@/lib/stripe"
+import { PricingPlan } from "@/types/pricing"
+
+const pricingPlans: PricingPlan[] = [
+  {
+    tier: "FREE",
+    name: "Free",
+    description: "Perfect for trying out our proposal creation",
+    price: 0,
+    interval: "monthly",
+    features: [
+      "1 Proposal Credit per Week",
+      "Basic AI Model",
+      "Email Support",
+      "Basic Templates",
+      "7-day Proposal Expiry"
+    ],
+    credits: 1,
+    highlight: false
+  },
+  {
+    tier: "PREMIUM",
+    name: "Premium",
+    description: "For regular proposal creators",
+    price: 7,
+    interval: "monthly",
+    features: [
+      "10 Proposal Credits Monthly",
+      "All AI Models",
+      "Priority Support",
+      "Premium Templates",
+      "Custom Expiry Dates",
+      "Analytics Dashboard",
+      "Customizable Branding"
+    ],
+    credits: 10,
+    highlight: true,
+    priceId: STRIPE_PRICE_IDS.PREMIUM_MONTHLY
+  },
+  {
+    tier: "YEARLY",
+    name: "Yearly",
+    description: "Best value for serious creators",
+    price: 50,
+    interval: "yearly",
+    features: [
+      "10 Proposal Credits Monthly",
+      "All Premium Features",
+      "VIP Support",
+      "Early Access to New Features",
+      "Personal Success Manager",
+      "Custom AI Model Training",
+      "API Access"
+    ],
+    credits: 10,
+    highlight: false,
+    priceId: STRIPE_PRICE_IDS.PREMIUM_YEARLY
+  }
+]
 
 export default function PricingPage() {
+  const { data: session } = useSession()
   const [selectedTier, setSelectedTier] = useState<string | null>(null)
 
   const handlePremiumClick = (tier: string) => {
@@ -26,62 +87,9 @@ export default function PricingPage() {
         <PricingHeader />
 
         <PricingCards 
-          user={null}
+          user={session?.user}
+          plans={pricingPlans}
           onPremiumClick={handlePremiumClick}
-          plans={[
-            {
-              tier: "FREE",
-              name: "Free",
-              description: "Perfect for trying out our proposal creation",
-              price: 0,
-              interval: "yearly",
-              features: [
-                "1 Proposal Credit per Year",
-                "Basic AI Model",
-                "Email Support",
-                "Basic Templates",
-                "7-day Proposal Expiry"
-              ],
-              credits: 1,
-              highlight: false
-            },
-            {
-              tier: "PREMIUM",
-              name: "Premium",
-              description: "Coming soon to India!",
-              price: 7.77,
-              interval: "monthly",
-              features: [
-                "7 Proposal Credits Monthly",
-                "All AI Models",
-                "Priority Support",
-                "Premium Templates",
-                "Custom Expiry Dates",
-                "Analytics Dashboard",
-                "Customizable Branding"
-              ],
-              credits: 7,
-              highlight: true
-            },
-            {
-              tier: "YEARLY",
-              name: "Lifetime",
-              description: "One-time purchase, coming soon!",
-              price: 100,
-              interval: "lifetime",
-              features: [
-                "7 Proposal Credits Monthly",
-                "All Premium Features",
-                "VIP Support",
-                "Early Access to New Features",
-                "Personal Success Manager",
-                "Custom AI Model Training",
-                "API Access"
-              ],
-              credits: 7,
-              highlight: false
-            }
-          ]}
         />
 
         {/* Additional Information */}
@@ -95,11 +103,11 @@ export default function PricingPage() {
             <Heart className="w-8 h-8 text-rose-500 animate-pulse" />
           </div>
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
-            Why Join the Waitlist?
+            Why Choose Premium?
           </h3>
           <p className="text-gray-600">
-            Be the first to access our premium features when they launch in India.
-            Get exclusive early-bird pricing and special bonuses for being an early supporter!
+            Unlock advanced features, get more credits, and create unlimited proposals.
+            Our premium plans are designed to help you create the perfect proposal every time.
           </p>
         </motion.div>
 

@@ -5,26 +5,21 @@ import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
-import { Inter, Dancing_Script, Great_Vibes, Parisienne } from "next/font/google";
+import { Inter,  DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const dancingScript = Dancing_Script({ 
+const dmSans = DM_Sans({ 
   subsets: ["latin"], 
-  variable: "--font-dancing-script",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-dm-sans",
   display: "swap" 
 });
-const greatVibes = Great_Vibes({ 
+const plusJakartaSans = Plus_Jakarta_Sans({ 
   subsets: ["latin"], 
-  weight: "400", 
-  variable: "--font-great-vibes",
-  display: "swap" 
-});
-const parisienne = Parisienne({ 
-  subsets: ["latin"], 
-  weight: "400", 
-  variable: "--font-parisienne",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plus-jakarta",
   display: "swap" 
 });
 
@@ -305,7 +300,11 @@ export default function RootLayout({
   return (
     <html 
       lang="en" 
-      className={`${inter.variable} ${dancingScript.variable} ${greatVibes.variable} ${parisienne.variable}`} 
+      className={`
+        ${inter.variable} 
+        ${dmSans.variable} 
+        ${plusJakartaSans.variable}
+      `}
       suppressHydrationWarning
     >
       <head>
@@ -343,7 +342,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className={`${inter.variable} min-h-screen flex flex-col`}>
+      <body className={`
+        ${inter.variable} 
+        min-h-screen flex flex-col
+      `}>
         <Providers>
           <Navbar />
           <main className="flex-grow">{children}</main>

@@ -19,24 +19,18 @@ interface EditableProposalProps {
 }
 
 const fonts = [
-  // Premium Romantic Fonts
-  { value: "font-great-vibes", label: "Great Vibes", description: "Luxurious & Romantic", category: "Romantic" },
-  { value: "font-playfair", label: "Playfair Display", description: "Elegant & Sophisticated", category: "Romantic" },
-  { value: "font-cormorant", label: "Cormorant Garamond", description: "Classic & Refined", category: "Romantic" },
-  { value: "font-bodoni", label: "Bodoni Moda", description: "Timeless & Luxurious", category: "Romantic" },
-  
-  // Modern Elegant Fonts
-  { value: "font-inter", label: "Inter", description: "Modern & Crisp", category: "Modern" },
-  { value: "font-dm-serif", label: "DM Serif Display", description: "Contemporary & Elegant", category: "Modern" },
-  { value: "font-libre-baskerville", label: "Libre Baskerville", description: "Sophisticated & Refined", category: "Modern" },
-  { value: "font-source-serif", label: "Source Serif Pro", description: "Professional & Polished", category: "Modern" },
+  // Professional & Clean Fonts
+  { value: "font-inter", label: "Inter", description: "Modern & Crisp", category: "Professional", default: true },
+  { value: "font-source-serif", label: "Source Serif Pro", description: "Professional & Polished", category: "Professional" },
+  { value: "font-dm-sans", label: "DM Sans", description: "Clean & Contemporary", category: "Professional" },
+  { value: "font-plus-jakarta", label: "Plus Jakarta Sans", description: "Elegant & Readable", category: "Professional" },
 ]
 
 export function EditableProposal({
   content,
   onSave,
   className,
-  font = "font-playfair",
+  font = "font-inter", // Default to Inter
   onFontChange
 }: EditableProposalProps) {
   const [editedContent, setEditedContent] = useState(content)
@@ -69,21 +63,9 @@ export function EditableProposal({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Romantic Fonts</SelectLabel>
+                <SelectLabel>Professional Fonts</SelectLabel>
                 {fonts
-                  .filter(f => f.category === "Romantic")
-                  .map((f) => (
-                    <SelectItem key={f.value} value={f.value}>
-                      <span className={cn("block", f.value)}>{f.label}</span>
-                      <span className="block text-xs text-muted-foreground">{f.description}</span>
-                    </SelectItem>
-                  ))
-                }
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel>Modern Elegant Fonts</SelectLabel>
-                {fonts
-                  .filter(f => f.category === "Modern")
+                  .filter(f => f.category === "Professional")
                   .map((f) => (
                     <SelectItem key={f.value} value={f.value}>
                       <span className="block">{f.label}</span>
@@ -109,23 +91,6 @@ export function EditableProposal({
         )}
         placeholder="Edit your proposal here..."
       />
-      {/* <Button
-        onClick={handleSave}
-        disabled={isSaving}
-        className="w-full bg-rose-500 hover:bg-rose-600"
-      >
-        {isSaving ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Saving...
-          </>
-        ) : (
-          <>
-            <Save className="w-4 h-4 mr-2" />
-            Save Proposal
-          </>
-        )}
-      </Button> */}
     </motion.div>
   )
 }

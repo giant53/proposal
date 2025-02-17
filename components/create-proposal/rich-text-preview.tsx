@@ -17,23 +17,17 @@ interface RichTextPreviewProps {
 }
 
 const fonts = [
-  // Premium Romantic Fonts
-  { value: "font-great-vibes", label: "Great Vibes", description: "Luxurious & Romantic", category: "Romantic" },
-  { value: "font-playfair", label: "Playfair Display", description: "Elegant & Sophisticated", category: "Romantic" },
-  { value: "font-cormorant", label: "Cormorant Garamond", description: "Classic & Refined", category: "Romantic" },
-  { value: "font-bodoni", label: "Bodoni Moda", description: "Timeless & Luxurious", category: "Romantic" },
-  
-  // Modern Elegant Fonts
-  { value: "font-inter", label: "Inter", description: "Modern & Crisp", category: "Modern" },
-  { value: "font-dm-serif", label: "DM Serif Display", description: "Contemporary & Elegant", category: "Modern" },
-  { value: "font-libre-baskerville", label: "Libre Baskerville", description: "Sophisticated & Refined", category: "Modern" },
-  { value: "font-source-serif", label: "Source Serif Pro", description: "Professional & Polished", category: "Modern" },
+  // Professional & Clean Fonts
+  { value: "font-inter", label: "Inter", description: "Modern & Crisp", category: "Professional", default: true },
+  { value: "font-source-serif", label: "Source Serif Pro", description: "Professional & Polished", category: "Professional" },
+  { value: "font-dm-sans", label: "DM Sans", description: "Clean & Contemporary", category: "Professional" },
+  { value: "font-plus-jakarta", label: "Plus Jakarta Sans", description: "Elegant & Readable", category: "Professional" },
 ]
 
 export function RichTextPreview({ 
   content, 
   className,
-  font = "font-playfair",
+  font = "font-inter", // Default to Inter
   onFontChange 
 }: RichTextPreviewProps) {
   return (
@@ -57,21 +51,9 @@ export function RichTextPreview({
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Romantic Fonts</SelectLabel>
+                <SelectLabel>Professional Fonts</SelectLabel>
                 {fonts
-                  .filter(f => f.category === "Romantic")
-                  .map((f) => (
-                    <SelectItem key={f.value} value={f.value}>
-                      <span className={cn("block", f.value)}>{f.label}</span>
-                      <span className="block text-xs text-muted-foreground">{f.description}</span>
-                    </SelectItem>
-                  ))
-                }
-              </SelectGroup>
-              <SelectGroup>
-                <SelectLabel>Modern Fonts</SelectLabel>
-                {fonts
-                  .filter(f => f.category === "Modern")
+                  .filter(f => f.category === "Professional")
                   .map((f) => (
                     <SelectItem key={f.value} value={f.value}>
                       <span className="block">{f.label}</span>
@@ -103,7 +85,7 @@ export function RichTextPreview({
           <h2 className={cn("text-2xl sm:text-3xl font-bold text-rose-600 tracking-wider", font)}>
             My Love Letter
           </h2>
-          <p className="text-xs sm:text-sm text-rose-500 italic">A heartfelt message just for you</p>
+          <p className="text-xs sm:text-sm text-rose-500">A heartfelt message just for you</p>
         </div>
 
         {/* Markdown Rendering */}
@@ -137,13 +119,13 @@ export function RichTextPreview({
               ),
               em: ({ node, ...props }) => (
                 <em 
-                  className="text-rose-500 not-italic font-medium" 
+                  className="text-rose-500 font-medium" 
                   {...props} 
                 />
               ),
               blockquote: ({ node, ...props }) => (
                 <blockquote 
-                  className="border-l-4 border-rose-200 pl-4 italic text-gray-600" 
+                  className="border-l-4 border-rose-200 pl-4 text-gray-600" 
                   {...props} 
                 />
               ),
@@ -185,7 +167,7 @@ export function RichTextPreview({
 
         {/* Romantic signature */}
         <div className="mt-6 pt-4 border-t border-rose-200 text-right">
-          <p className={cn("text-rose-600 text-xl italic", font)}>
+          <p className={cn("text-rose-600 text-xl", font)}>
             Yours Lovingly
           </p>
         </div>

@@ -18,6 +18,15 @@ export async function POST(req: NextRequest) {
       return errorResponse("Missing required information")
     }
 
+    // Check user credits
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id }
+    })
+
+    if (!user || user.remainingCredits < 1) {
+      return errorResponse("Insufficient credits to send proposal")
+    }
+
     // Check if email is unsubscribed
     if (email) {
       const unsubscribed = await prisma.unsubscribedEmail.findUnique({
@@ -46,14 +55,46 @@ export async function POST(req: NextRequest) {
     // Generate secret hash if not exists
     const secretHash = proposal.secretHash || crypto.randomBytes(32).toString('hex')
 
-    // Update proposal with secret hash
-    await prisma.proposal.update({
-      where: { id: proposalId },
-      data: { secretHash },
+    // Start a transaction to handle proposal sending and credit deduction
+    await prisma.$transaction(async (tx) => {
+      // Update proposal with secret hash and status
+      await tx.proposal.update({
+        where: { id: proposalId },
+        data: { 
+          secretHash,
+          status: "SENT",
+          consentSentAt: new Date(),
+          deliveryMethod: methods[0]
+        },
+      })
+
+      // Deduct credit
+      await tx.user.update({
+        where: { id: session.user.id },
+        data: {
+          remainingCredits: {
+            decrement: 1
+          }
+        }
+      })
+
+      // Create audit log
+      await tx.auditLog.create({
+        data: {
+          userId: session.user.id,
+          action: "PROPOSAL_SENT",
+          details: {
+            proposalId,
+            successfulMethods: methods,
+            creditsUsed: 1
+          },
+        },
+      })
     })
 
     const proposalUrl = `${process.env.NEXT_PUBLIC_APP_URL}/proposals/${proposalId}?secretCode=${secretHash}`
 
+    // Send proposal through selected channels
     const results = await Promise.allSettled(
       methods.map(async (method: string) => {
         switch (method) {
@@ -251,7 +292,7 @@ Proposal.love`,
       console.error("Some delivery methods failed:", failures)
       return errorResponse("Some delivery methods failed", 500)
     }
-
+    
     // Update proposal status
     await prisma.proposal.update({
       where: { id: proposalId },
@@ -275,7 +316,8 @@ Proposal.love`,
     })
 
     return successResponse({ 
-      message: "Proposal sent successfully through all channels" 
+      message: "Proposal sent successfully through all channels",
+      remainingCredits: user.remainingCredits - 1
     })
   } catch (error) {
     console.error("Error sending proposal:", error)

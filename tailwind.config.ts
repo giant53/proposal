@@ -12,9 +12,9 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-inter)'],
-        'dancing-script': ['var(--font-dancing-script)'],
-        'great-vibes': ['var(--font-great-vibes)'],
-        'parisienne': ['var(--font-parisienne)'],
+        'source-serif': ['var(--font-source-serif)'],
+        'dm-sans': ['var(--font-dm-sans)'],
+        'plus-jakarta': ['var(--font-plus-jakarta)'],
       },
       colors: {
         background: 'hsl(var(--background))',
