@@ -227,15 +227,15 @@ Visit ${proposalUrl} to view. Msg&data rates may apply. Reply STOP to unsubscrib
             if (!phone) throw new Error("Phone required for WhatsApp delivery")
             return sendWhatsApp({
               to: phone,
-              content: `Confidential Personal Message 🔒
+              content: `✨ A heartfelt message awaits you ✨
 
-A message has been sent to you via Proposal.love. This is a private communication.
+🎁 Someone special has created a beautiful proposal just for you.
 
-View your message: ${proposalUrl}
+💌 View your special message here:
+${proposalUrl}
 
-Privacy Notice: If this message was sent to you by mistake, please delete it immediately.
-
-To stop receiving messages, reply STOP.`,
+With love and anticipation,
+Proposal.love`,
               recipientName: name,
             })
           

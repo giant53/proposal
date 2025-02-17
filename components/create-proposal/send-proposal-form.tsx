@@ -21,14 +21,18 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
   const [methods, setMethods] = useState<DeliveryMethod[]>([])
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
-  //const [phone, setPhone] = useState("")
+  const [phone, setPhone] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const toggleMethod = (method: DeliveryMethod) => {
-    // Only allow email method
-    console.log(method)
-    setMethods(["EMAIL"])
+    setMethods(prev => {
+      const methodExists = prev.includes(method)
+      if (methodExists) {
+        return prev.filter(m => m !== method)
+      }
+      return [...prev, method]
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,14 +41,26 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
       setError("Please select at least one delivery method")
       return
     }
+
+    // Validate required fields based on selected methods
+    if (methods.includes("EMAIL") && !email) {
+      setError("Email is required for email delivery")
+      return
+    }
+    if ((methods.includes("SMS") || methods.includes("WHATSAPP")) && !phone) {
+      setError("Phone number is required for SMS/WhatsApp delivery")
+      return
+    }
+
     setError(null)
     setIsSubmitting(true)
 
     try {
       await onSubmit({
         name,
-        email: email,
-        methods: ["EMAIL"],
+        email,
+        phone,
+        methods,
       })
     } catch (error) {
       setError(error instanceof Error ? error.message : "Failed to send proposal")
@@ -106,58 +122,66 @@ export function SendProposalForm({ onSubmit, className }: SendProposalFormProps)
                 </motion.div>
               </Button>
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0.6 }}
-              whileHover={{ scale: 1.05 }}
-              className="relative"
+            <Button
+              type="button"
+              variant={methods.includes("WHATSAPP") ? "default" : "outline"}
+              className={cn(
+                "flex-col py-2 sm:py-4 h-auto gap-1 sm:gap-2 text-xs sm:text-sm",
+                methods.includes("WHATSAPP") && "bg-green-500 hover:bg-green-600"
+              )}
+              onClick={() => toggleMethod("WHATSAPP")}
             >
-              <Button
-                type="button"
-                disabled
-                variant="outline"
-                className="flex-col py-2 sm:py-4 h-auto gap-1 sm:gap-2 w-full opacity-50 cursor-not-allowed relative text-xs sm:text-sm"
-              >
-                <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                <span>WhatsApp</span>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full"
-                >
-                  Soon
-                </motion.div>
-              </Button>
-            </motion.div>
+              <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span>WhatsApp</span>
+            </Button>
           </div>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-xs text-gray-500 mt-2 text-center px-2 sm:px-0"
-          >
-            📣 SMS and WhatsApp delivery options are coming soon!
-          </motion.p>
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div
-            key="email"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-2"
-          >
-            <Label htmlFor="email" className="text-sm sm:text-base">Email Address</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter their email"
-              required
-              className="transition-all duration-200 focus:ring-rose-500 text-sm sm:text-base p-2 sm:p-3"
-            />
-          </motion.div>
+          {methods.includes("EMAIL") && (
+            <motion.div
+              key="email"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-2"
+            >
+              <Label htmlFor="email" className="text-sm sm:text-base">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter their email"
+                required={methods.includes("EMAIL")}
+                className="transition-all duration-200 focus:ring-rose-500 text-sm sm:text-base p-2 sm:p-3"
+              />
+            </motion.div>
+          )}
+
+          {methods.includes("WHATSAPP") && (
+            <motion.div
+              key="phone"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-2"
+            >
+              <Label htmlFor="phone" className="text-sm sm:text-base">Phone Number (WhatsApp)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="+1234567890"
+                required={methods.includes("WHATSAPP")}
+                className="transition-all duration-200 focus:ring-rose-500 text-sm sm:text-base p-2 sm:p-3"
+              />
+              <p className="text-xs text-gray-500">
+                Enter the full phone number with country code (e.g., +1 for US)
+              </p>
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 

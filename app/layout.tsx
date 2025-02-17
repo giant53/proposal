@@ -103,12 +103,17 @@ const keywords = [
 ];
 
 export const viewport: Viewport = {
-  themeColor: "#FF4D79",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FF4D79" },
+    { media: "(prefers-color-scheme: dark)", color: "#FF4D79" }
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  colorScheme: "light",
-  //applicationName: "myproposal.love - AI Proposal Generator"
+  minimumScale: 1,
+  userScalable: true,
+  viewportFit: "cover",
+  colorScheme: "light"
 };
 
 export const metadata: Metadata = {
@@ -126,8 +131,6 @@ export const metadata: Metadata = {
   generator: "Next.js",
   referrer: "origin-when-cross-origin",
   authors: [{ name: "myproposal.love Team", url: "https://myproposal.love" }],
-  colorScheme: "light",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=5",
   
   verification: {
     google: "sbHJozLP1aBAAZXxD7-kZuJWYJKH7XFp0odgp4zaNuo",
@@ -137,6 +140,45 @@ export const metadata: Metadata = {
   },
   
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icons/favicon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }
+    ],
+    other: [
+      { url: "/icons/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/android-chrome-512x512.png", sizes: "512x512", type: "image/png" }
+    ]
+  },
+  
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://myproposal.love",
+    title: "AI Proposal Generator | Create Perfect Marriage & Valentine's Proposals",
+    description: "Create the perfect proposal with our AI-powered proposal generator. Craft romantic, personalized marriage proposals and Valentine's Day messages.",
+    siteName: "myproposal.love",
+    images: [{
+      url: "/1200x630.png",
+      width: 1200,
+      height: 630,
+      alt: "myproposal.love - AI Proposal Generator"
+    }]
+  },
+  
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Proposal Generator | myproposal.love",
+    description: "Create the perfect proposal with our AI-powered proposal generator",
+    creator: "@myproposal_love",
+    images: ["/1200x630.png"]
+  },
+  
   appleWebApp: {
     capable: true,
     title: "myproposal.love",
@@ -292,7 +334,7 @@ export default function RootLayout({
         <meta name="msapplication-TileImage" content="/icons/mstile-144x144.png" />
         
         {/* Social media verification */}
-        <meta name="facebook-domain-verification" content="sbHJozLP1aBAAZXxD7-kZuJWYJKH7XFp0odgp4zaNuo" />
+        {/* <meta name="facebook-domain-verification" content="sbHJozLP1aBAAZXxD7-kZuJWYJKH7XFp0odgp4zaNuo" /> */}
         <meta name="google-site-verification" content="sbHJozLP1aBAAZXxD7-kZuJWYJKH7XFp0odgp4zaNuo" />
         
         {/* JSON-LD structured data */}

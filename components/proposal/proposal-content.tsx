@@ -3,25 +3,26 @@
 
 import { Button } from "@/components/ui/button"
 import { format } from "date-fns"
-import { Heart, Type } from "lucide-react"
+import { Type } from "lucide-react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { RichTextRenderer } from "./rich-text-renderer"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import Image from "next/image"
 
 const fonts = [
+   // Standard Fonts
+   { value: "font-inter", label: "Inter", description: "Modern & Clean", category: "Standard" },
+   { value: "font-serif", label: "Serif", description: "Traditional & Elegant", category: "Standard" },
+   { value: "font-roboto", label: "Roboto", description: "Flexible & Modern", category: "Standard" },
+
   // Romantic Fonts
   { value: "font-dancing-script", label: "Dancing Script", description: "Elegant & Flowing", category: "Romantic" },
   { value: "font-great-vibes", label: "Great Vibes", description: "Romantic & Classic", category: "Romantic" },
   { value: "font-parisienne", label: "Parisienne", description: "Graceful & Delicate", category: "Romantic" },
-  { value: "font-lobster", label: "Lobster", description: "Cursive & Elegant", category: "Romantic" },
-  
-  // Standard Fonts
-  { value: "font-inter", label: "Inter", description: "Modern & Clean", category: "Standard" },
-  { value: "font-serif", label: "Serif", description: "Traditional & Elegant", category: "Standard" },
-  { value: "font-roboto", label: "Roboto", description: "Flexible & Modern", category: "Standard" },
+  { value: "font-lobster", label: "Lobster", description: "Cursive & Elegant", category: "Romantic" }, 
 ]
 
 interface ProposalContentProps {
@@ -96,7 +97,7 @@ export function ProposalContent({ proposal, isCreator }: ProposalContentProps) {
               transition={{ delay: 0.4 }}
               className="p-3 bg-rose-100 rounded-full"
             >
-              <Heart className="w-8 h-8 text-rose-500" />
+              <Image src="/wlogo.svg" alt="Dancing Script" width={80} height={80} />
             </motion.div>
           </div>
 

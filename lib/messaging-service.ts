@@ -41,7 +41,6 @@ interface WhatsAppOptions {
   recipientName?: string;
 }
 
-
 // Email sending function
 export async function sendEmail({
   to, 
@@ -119,7 +118,7 @@ export async function sendSMS({
   }
 }
 
-// WhatsApp sending function
+// WhatsApp sending function with optimized message templates
 export async function sendWhatsApp({
   to, 
   content, 
@@ -130,23 +129,79 @@ export async function sendWhatsApp({
   }
 
   try {
-    const message = recipientName 
-      ? `Dear ${recipientName},\n\n${content}` 
-      : content;
+    // Format the phone number to ensure it's in E.164 format
+    const formattedNumber = formatPhoneNumber(to);
+    
+    // Prepare the message content with a professional template
+    const messageBody = recipientName 
+      ? `Dear ${recipientName},\n\n${content}\n\nSent with love via proposal.me ❤️` 
+      : `${content}\n\nSent with love via proposal.me ❤️`;
 
+    // Send the message using Twilio's messaging API
     const result = await twilioClient.messages.create({
-      body: message,
-      to: `whatsapp:${to}`,
-      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
+      body: messageBody,
+      to: `whatsapp:${formattedNumber}`,
+      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`
     });
 
     console.log("WhatsApp message sent:", result.sid);
-    return result;
+    return {
+      success: true,
+      messageId: result.sid,
+      status: result.status
+    };
   } catch (error) {
     console.error("Error sending WhatsApp message:", error);
     throw error;
   }
 }
+
+// Helper function to format phone numbers to E.164 format
+function formatPhoneNumber(phone: string): string {
+  // Remove any non-digit characters
+  const digits = phone.replace(/\D/g, '');
+  
+  // Ensure number starts with '+' and has country code
+  if (digits.startsWith('1')) {
+    return `+${digits}`;
+  } else if (!digits.startsWith('+')) {
+    // Default to US/Canada if no country code (you may want to make this configurable)
+    return `+1${digits}`;
+  }
+  return `+${digits}`;
+}
+
+// Helper function to check if this is the first message to a recipient
+// async function isFirstTimeRecipient(phoneNumber: string): Promise<boolean> {
+//   try {
+//     // Check message history with this recipient
+//     const messages = await twilioClient.messages.list({
+//       to: `whatsapp:${phoneNumber}`,
+//       limit: 1
+//     });
+//     return messages.length === 0;
+//   } catch (error) {
+//     console.error("Error checking message history:", error);
+//     // Default to treating as first-time recipient if we can't check
+//     return true;
+//   }
+// }
+
+// Helper function to store message details for tracking
+// interface MessageDetails {
+//   messageId: string;
+//   recipient: string;
+//   type: 'whatsapp' | 'sms' | 'email';
+//   status: string;
+//   isFirstMessage: boolean;
+// }
+
+// async function storeMessageDetails(details: MessageDetails) {
+//   // Implement your storage logic here (e.g., database storage)
+//   // This is important for tracking message status and managing costs
+//   console.log("Storing message details:", details);
+//   // TODO: Implement actual storage logic
+// }
 
 interface SendMessageProps {
   to: string;
@@ -184,64 +239,6 @@ export async function sendMessage({
     };
   }
 }
-
-// async function sendEmail(to: string, message: string, recipientName: string) {
-//   if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
-//     throw new Error(
-//       "Email configuration is missing. Please check your environment variables."
-//     );
-//   }
-
-//   const html = `
-//     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-//       <h2 style="color: #e11d48;">A Special Message for ${recipientName}</h2>
-//       <div style="white-space: pre-wrap; padding: 20px; background-color: #fff1f2; border-radius: 8px; margin: 20px 0;">
-//         ${message}
-//       </div>
-//       <p style="color: #64748b; font-size: 14px;">
-//         This is a special proposal sent via myproposal.❤️. Please respond with care.
-//       </p>
-//     </div>
-//   `;
-
-//   try {
-//     await emailTransporter.verify(); // Verify connection configuration
-
-//     const mailOptions = {
-//       from: {
-//         name: "Proposal.me",
-//         address: process.env.SMTP_FROM || process.env.SMTP_USER,
-//       },
-//       to,
-//       subject: "A Special Message for You 💝",
-//       text: message,
-//       html,
-//     };
-
-//     const info = await emailTransporter.sendMail(mailOptions);
-//     console.log("Message sent: %s", info.messageId);
-//     return info;
-//   } catch (error) {
-//     console.error("Error sending email:", error);
-//     throw error;
-//   }
-// }
-
-// async function sendSMS(to: string, message: string) {
-//   await twilioClient.messages.create({
-//     body: message,
-//     to,
-//     from: process.env.TWILIO_PHONE_NUMBER,
-//   });
-// }
-
-// async function sendWhatsApp(to: string, message: string) {
-//   await twilioClient.messages.create({
-//     body: message,
-//     to: `whatsapp:${to}`,
-//     from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`,
-//   });
-// }
 
 export async function testMessageService() {
   if (process.env.NODE_ENV !== "development") {

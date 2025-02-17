@@ -77,7 +77,7 @@ export default function Home() {
     >
       {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-[url('/hearts-pattern.png')] opacity-5" />
+        <div className="absolute inset-0 bg-[url('/wlogo.svg')] opacity-5" />
         {[...Array(15)].map((_, i) => (
           <motion.div
             key={i}
@@ -104,20 +104,7 @@ export default function Home() {
       {/* Hero Section with Video Background */}
       <div className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
         {/* Video Background */}
-        <div className="absolute inset-0 w-full h-full">
-          {/* Dark overlay to improve text visibility */}
-          <div className="absolute inset-0 bg-black/40 z-10" />
-          <div className="absolute inset-0 bg-gradient-to-r from-rose-50 via-rose-50 to-pink-50 backdrop-blur-sm z-10" />
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover"
-          >
-            <source src="/proposal-bg.mp4" type="video/mp4" />
-          </video>
-        </div>
+        
 
         {/* Floating Hearts Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
