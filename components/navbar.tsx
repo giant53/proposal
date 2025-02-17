@@ -10,7 +10,6 @@ import {
   Home,
   Star,
   HelpCircle,
-  X,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -82,6 +81,12 @@ export function Navbar() {
               >
                 Features
               </Link>
+              <Link
+                href="/pricing"
+                className="text-gray-600 hover:text-rose-600 transition-colors flex items-center space-x-1"
+              >
+                Pricing
+              </Link>
             </div>
 
             {/* User Actions */}
@@ -152,20 +157,13 @@ export function Navbar() {
                       <Menu className="w-6 h-6 text-rose-600" />
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="right" className="w-full max-w-md bg-white/95 backdrop-blur-xl">
+                  <SheetContent side="right" className="w-full max-w-[90vh] bg-white/95 backdrop-blur-xl">
                     <SheetHeader className="mb-6">
                       <SheetTitle className="flex justify-between items-center">
                         <div className="flex items-center space-x-2 text-xl font-bold text-rose-600">
                           <Image src="/wlogo.svg" alt="Logo" width={40} height={40} />
                           <span>myproposal.love</span>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                          <X className="w-6 h-6 text-rose-600" />
-                        </Button>
                       </SheetTitle>
                     </SheetHeader>
 

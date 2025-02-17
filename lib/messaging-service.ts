@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-require-imports */
 import nodemailer from "nodemailer";
 import twilio from "twilio";
 
@@ -15,11 +17,14 @@ const emailTransporter = nodemailer.createTransport({
   },
 });
 
-// Initialize Twilio client
+console.log("Email Transporter:", emailTransporter);
+
 const twilioClient = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
+  process.env.TWILIO_ACCOUNT_SID!,
+  process.env.TWILIO_AUTH_TOKEN!
 );
+
+console.log("Twilio Client:", twilioClient);
 
 // Interfaces for consistent method signatures
 interface EmailOptions {
@@ -106,8 +111,8 @@ export async function sendSMS({
 
     const result = await twilioClient.messages.create({
       body: message,
-      to,
-      from: process.env.TWILIO_PHONE_NUMBER,
+      to: formatPhoneNumber(to),
+      from: process.env.TWILIO_PHONE_NUMBER
     });
 
     console.log("SMS sent:", result.sid);
@@ -124,32 +129,27 @@ export async function sendWhatsApp({
   content, 
   recipientName
 }: WhatsAppOptions) {
-  if (!process.env.TWILIO_WHATSAPP_NUMBER) {
-    throw new Error("Twilio WhatsApp number is not configured");
-  }
+  // if (!process.env.TWILIO_WHATSAPP_NUMBER) {
+  //   throw new Error("Twilio WhatsApp number is not configured");
+  // }
 
   try {
     // Format the phone number to ensure it's in E.164 format
-    const formattedNumber = formatPhoneNumber(to);
-    
-    // Prepare the message content with a professional template
-    const messageBody = recipientName 
-      ? `Dear ${recipientName},\n\n${content}\n\nSent with love via proposal.me ❤️` 
-      : `${content}\n\nSent with love via proposal.me ❤️`;
+    const accountSid = '*****e';
+const authToken = 'e*****1';
+const client = require('twilio')(accountSid, authToken);
 
-    // Send the message using Twilio's messaging API
-    const result = await twilioClient.messages.create({
-      body: messageBody,
-      to: `whatsapp:${formattedNumber}`,
-      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`
-    });
+const result = await client.messages
+    .create({
+                from: 'whatsapp:+14155238886',
+        contentSid: 'HXb5b62575e6e4ff6129ad7c8efe1f983e',
+        contentVariables: '{"1":"12/1","2":"3pm"}',
+        to: 'whatsapp:+919873459831'
+    })
+    .then((message: { sid: any; }) => console.log(message))
 
-    console.log("WhatsApp message sent:", result.sid);
-    return {
-      success: true,
-      messageId: result.sid,
-      status: result.status
-    };
+    console.log("result:", result)
+    return result;
   } catch (error) {
     console.error("Error sending WhatsApp message:", error);
     throw error;
@@ -170,38 +170,6 @@ function formatPhoneNumber(phone: string): string {
   }
   return `+${digits}`;
 }
-
-// Helper function to check if this is the first message to a recipient
-// async function isFirstTimeRecipient(phoneNumber: string): Promise<boolean> {
-//   try {
-//     // Check message history with this recipient
-//     const messages = await twilioClient.messages.list({
-//       to: `whatsapp:${phoneNumber}`,
-//       limit: 1
-//     });
-//     return messages.length === 0;
-//   } catch (error) {
-//     console.error("Error checking message history:", error);
-//     // Default to treating as first-time recipient if we can't check
-//     return true;
-//   }
-// }
-
-// Helper function to store message details for tracking
-// interface MessageDetails {
-//   messageId: string;
-//   recipient: string;
-//   type: 'whatsapp' | 'sms' | 'email';
-//   status: string;
-//   isFirstMessage: boolean;
-// }
-
-// async function storeMessageDetails(details: MessageDetails) {
-//   // Implement your storage logic here (e.g., database storage)
-//   // This is important for tracking message status and managing costs
-//   console.log("Storing message details:", details);
-//   // TODO: Implement actual storage logic
-// }
 
 interface SendMessageProps {
   to: string;
