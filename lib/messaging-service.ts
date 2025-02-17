@@ -129,26 +129,28 @@ export async function sendWhatsApp({
   content, 
   recipientName
 }: WhatsAppOptions) {
-  // if (!process.env.TWILIO_WHATSAPP_NUMBER) {
-  //   throw new Error("Twilio WhatsApp number is not configured");
-  // }
+  if (!process.env.TWILIO_WHATSAPP_NUMBER) {
+    throw new Error("Twilio WhatsApp number is not configured");
+  }
 
   try {
     // Format the phone number to ensure it's in E.164 format
-    const accountSid = '*****e';
-const authToken = 'e*****1';
-const client = require('twilio')(accountSid, authToken);
+    const formattedNumber = formatPhoneNumber(to);
+    
+    // Prepare the message content with emojis and proper formatting
+    const messageBody = `${recipientName ? `Dear ${recipientName},\n\n` : ""}${content}\n\n` +
+      `💝 Sent with love via Proposal.love\n` +
+      `🔒 This is a private message. Please respect privacy.\n` +
+      `❌ Reply STOP to unsubscribe.`;
 
-const result = await client.messages
-    .create({
-                from: 'whatsapp:+14155238886',
-        contentSid: 'HXb5b62575e6e4ff6129ad7c8efe1f983e',
-        contentVariables: '{"1":"12/1","2":"3pm"}',
-        to: 'whatsapp:+919873459831'
-    })
-    .then((message: { sid: any; }) => console.log(message))
+    // Send the message using Twilio's messaging API
+    const result = await twilioClient.messages.create({
+      body: messageBody,
+      to: `whatsapp:${formattedNumber}`,
+      from: `whatsapp:${process.env.TWILIO_WHATSAPP_NUMBER}`
+    });
 
-    console.log("result:", result)
+    console.log("WhatsApp message sent:", result.sid);
     return result;
   } catch (error) {
     console.error("Error sending WhatsApp message:", error);

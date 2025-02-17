@@ -1,65 +1,54 @@
 import Stripe from 'stripe'
 
-// Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-01-27.acacia',
-  typescript: true,
+  appInfo: {
+    name: 'MyProposal.app',
+    version: '0.1.0'
+  }
 })
 
-// Constants for Stripe Price IDs
-export const STRIPE_PRICE_IDS = {
-  PREMIUM_MONTHLY: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID!,
-  PREMIUM_YEARLY: process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID!,
+export const SUBSCRIPTION_TIERS = {
+  FREE: 'FREE',
+  PREMIUM: 'PREMIUM',
+  YEARLY: 'YEARLY'
 } as const
 
-export const getStripeCustomer = async (customerId: string) => {
-  try {
-    return await stripe.customers.retrieve(customerId)
-  } catch (error) {
-    console.error('Error retrieving Stripe customer:', error)
-    return null
-  }
+export const SUBSCRIPTION_PRICES = {
+  PREMIUM_MONTHLY: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID!,
+  PREMIUM_YEARLY: process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID!
+} as const
+
+export const SUBSCRIPTION_CREDITS = {
+  FREE: 1,
+  PREMIUM: 10,
+  YEARLY: 10
+} as const
+
+export const CREDIT_RESET_INTERVALS = {
+  FREE: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+  PREMIUM: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
+  YEARLY: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
+} as const
+
+export const getNextCreditResetDate = (tier: keyof typeof SUBSCRIPTION_CREDITS) => {
+  const now = new Date()
+  const interval = CREDIT_RESET_INTERVALS[tier]
+  return new Date(now.getTime() + interval)
 }
 
-export const createStripeCustomer = async (email: string, name: string) => {
-  try {
-    return await stripe.customers.create({
-      email,
-      name,
-      metadata: {
-        source: 'myproposal.app'
-      }
-    })
-  } catch (error) {
-    console.error('Error creating Stripe customer:', error)
-    return null
-  }
-}
-
-export const createStripeSubscription = async (
-  customerId: string,
-  priceId: string,
+export const calculateRemainingCredits = (
+  tier: keyof typeof SUBSCRIPTION_CREDITS,
+  lastResetDate: Date,
+  currentCredits: number
 ) => {
-  try {
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{ price: priceId }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: { save_default_payment_method: 'on_subscription' },
-      expand: ['latest_invoice.payment_intent'],
-    })
-    return subscription
-  } catch (error) {
-    console.error('Error creating Stripe subscription:', error)
-    return null
+  const now = new Date()
+  const interval = CREDIT_RESET_INTERVALS[tier]
+  const resetCount = Math.floor((now.getTime() - lastResetDate.getTime()) / interval)
+  
+  if (resetCount > 0) {
+    return SUBSCRIPTION_CREDITS[tier]
   }
-}
-
-export const cancelStripeSubscription = async (subscriptionId: string) => {
-  try {
-    return await stripe.subscriptions.cancel(subscriptionId)
-  } catch (error) {
-    console.error('Error canceling Stripe subscription:', error)
-    return null
-  }
+  
+  return currentCredits
 }

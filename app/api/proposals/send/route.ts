@@ -2,7 +2,7 @@ import { auth } from "@/auth"
 import { errorResponse, successResponse } from "@/lib/api-response"
 import { NextRequest } from "next/server"
 import { prisma } from "@/prisma"
-import { sendEmail, sendSMS, sendWhatsApp } from "@/lib/messaging-service"
+import { sendEmail, sendSMS, sendWhatsApp } from "@/lib/messaging-service";
 import crypto from "crypto"
 
 export async function POST(req: NextRequest) {
@@ -18,13 +18,23 @@ export async function POST(req: NextRequest) {
       return errorResponse("Missing required information")
     }
 
-    // Check user credits
+    // Check remaining credits
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
+      where: { id: session.user.id },
+      select: {
+        remainingCredits: true,
+        subscriptionStatus: true,
+        lastCreditReset: true,
+        subscriptionTier: true
+      }
     })
 
-    if (!user || user.remainingCredits < 1) {
-      return errorResponse("Insufficient credits to send proposal")
+    if (!user) {
+      return errorResponse("User not found")
+    }
+
+    if (user.remainingCredits <= 0) {
+      return errorResponse("No remaining credits. Please upgrade your plan.")
     }
 
     // Check if email is unsubscribed
@@ -55,46 +65,14 @@ export async function POST(req: NextRequest) {
     // Generate secret hash if not exists
     const secretHash = proposal.secretHash || crypto.randomBytes(32).toString('hex')
 
-    // Start a transaction to handle proposal sending and credit deduction
-    await prisma.$transaction(async (tx) => {
-      // Update proposal with secret hash and status
-      await tx.proposal.update({
-        where: { id: proposalId },
-        data: { 
-          secretHash,
-          status: "SENT",
-          consentSentAt: new Date(),
-          deliveryMethod: methods[0]
-        },
-      })
-
-      // Deduct credit
-      await tx.user.update({
-        where: { id: session.user.id },
-        data: {
-          remainingCredits: {
-            decrement: 1
-          }
-        }
-      })
-
-      // Create audit log
-      await tx.auditLog.create({
-        data: {
-          userId: session.user.id,
-          action: "PROPOSAL_SENT",
-          details: {
-            proposalId,
-            successfulMethods: methods,
-            creditsUsed: 1
-          },
-        },
-      })
+    // Update proposal with secret hash
+    await prisma.proposal.update({
+      where: { id: proposalId },
+      data: { secretHash },
     })
 
     const proposalUrl = `${process.env.NEXT_PUBLIC_APP_URL}/proposals/${proposalId}?secretCode=${secretHash}`
 
-    // Send proposal through selected channels
     const results = await Promise.allSettled(
       methods.map(async (method: string) => {
         switch (method) {
@@ -292,16 +270,26 @@ Proposal.love`,
       console.error("Some delivery methods failed:", failures)
       return errorResponse("Some delivery methods failed", 500)
     }
-    
-    // Update proposal status
-    await prisma.proposal.update({
-      where: { id: proposalId },
-      data: {
-        status: "SENT",
-        consentSentAt: new Date(),
-        deliveryMethod: methods[0],
-      },
-    })
+
+    // Update proposal status and deduct credit
+    await prisma.$transaction([
+      prisma.proposal.update({
+        where: { id: proposalId },
+        data: {
+          status: "SENT",
+          consentSentAt: new Date(),
+          deliveryMethod: methods[0],
+        },
+      }),
+      prisma.user.update({
+        where: { id: session.user.id },
+        data: {
+          remainingCredits: {
+            decrement: 1
+          }
+        }
+      })
+    ])
 
     // Create audit log
     await prisma.auditLog.create({
@@ -316,8 +304,7 @@ Proposal.love`,
     })
 
     return successResponse({ 
-      message: "Proposal sent successfully through all channels",
-      remainingCredits: user.remainingCredits - 1
+      message: "Proposal sent successfully through all channels" 
     })
   } catch (error) {
     console.error("Error sending proposal:", error)

@@ -16,6 +16,7 @@ declare module "next-auth" {
       // Subscription-related fields
       subscriptionTier: SubscriptionTier
       subscriptionStatus?: SubscriptionStatus
+      subscriptionId?: string | null
       remainingCredits: number
       currentPeriodStart?: Date | null
       currentPeriodEnd?: Date | null
@@ -38,6 +39,7 @@ declare module "next-auth" {
     // Subscription-related fields
     subscriptionTier: SubscriptionTier
     subscriptionStatus: SubscriptionStatus
+    subscriptionId?: string | null
     remainingCredits: number
     currentPeriodStart?: Date | null
     currentPeriodEnd?: Date | null
@@ -59,6 +61,7 @@ declare module "next-auth/jwt" {
     // Subscription-related fields
     subscriptionTier: SubscriptionTier
     subscriptionStatus: SubscriptionStatus
+    subscriptionId?: string | null
     remainingCredits: number
     currentPeriodStart?: Date | null
     currentPeriodEnd?: Date | null

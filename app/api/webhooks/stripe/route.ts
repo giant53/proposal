@@ -1,124 +1,140 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/prisma'
 import Stripe from 'stripe'
-
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+import { SubscriptionStatus, SubscriptionTier } from '@prisma/client'
+import { SUBSCRIPTION_CREDITS, CREDIT_RESET_INTERVALS } from '@/lib/stripe'
 
 export async function POST(req: Request) {
+  const body = await req.text()
+  const signature = (await headers()).get('stripe-signature')
+
+  if (!signature) {
+    return new NextResponse('No signature', { status: 400 })
+  }
+
+  let event: Stripe.Event
+
   try {
-    const body = await req.text()
-    const signature = (await headers()).get('Stripe-Signature') as string
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    )
+  } catch (error) {
+    return new NextResponse('Invalid signature', { status: 400 })
+  }
 
-    let event: Stripe.Event
+  const session = event.data.object as Stripe.Checkout.Session
+  const subscription = event.data.object as Stripe.Subscription
+  const customer = event.data.object as Stripe.Customer
 
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
-    } catch (error) {
-      console.error('Webhook signature verification failed:', error)
-      return new NextResponse('Webhook Error', { status: 400 })
-    }
-
-    const session = event.data.object as Stripe.Subscription
-
+  try {
     switch (event.type) {
-      case 'customer.subscription.created':
+      case 'checkout.session.completed':
+        // Update user subscription status
+        if (session.subscription && session.customer) {
+          const stripeCustomerId = session.customer as string
+          
+          // Find user by Stripe customer ID
+          const user = await prisma.user.findFirst({
+            where: { 
+              customerId: stripeCustomerId 
+            }
+          })
+
+          if (user) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                subscriptionId: session.subscription as string,
+                subscriptionStatus: SubscriptionStatus.ACTIVE,
+                subscriptionTier: SubscriptionTier.PREMIUM,
+                remainingCredits: SUBSCRIPTION_CREDITS.PREMIUM,
+                currentPeriodStart: new Date(),
+                currentPeriodEnd: new Date(Date.now() + CREDIT_RESET_INTERVALS.PREMIUM),
+                lastCreditReset: new Date(),
+                customerId: stripeCustomerId
+              },
+            })
+          }
+        }
+        break
+
       case 'customer.subscription.updated':
         // Handle subscription updates
-        await handleSubscriptionChange(session)
+        if (subscription.status === 'active') {
+          const user = await prisma.user.findFirst({
+            where: { 
+              subscriptionId: subscription.id 
+            }
+          })
+
+          if (user) {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                subscriptionStatus: SubscriptionStatus.ACTIVE,
+                cancelAtPeriodEnd: subscription.cancel_at_period_end,
+                currentPeriodStart: new Date(subscription.current_period_start * 1000),
+                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+              },
+            })
+          }
+        }
         break
 
       case 'customer.subscription.deleted':
         // Handle subscription cancellation
-        await handleSubscriptionCancellation(session)
+        const cancelledUser = await prisma.user.findFirst({
+          where: { 
+            subscriptionId: subscription.id 
+          }
+        })
+
+        if (cancelledUser) {
+          await prisma.user.update({
+            where: { id: cancelledUser.id },
+            data: {
+              subscriptionStatus: SubscriptionStatus.CANCELLED,
+              subscriptionTier: SubscriptionTier.FREE,
+              remainingCredits: SUBSCRIPTION_CREDITS.FREE,
+              subscriptionId: null,
+              currentPeriodStart: null,
+              currentPeriodEnd: null,
+            },
+          })
+        }
         break
 
-      case 'invoice.payment_succeeded':
-        // Handle successful payments and credit updates
-        await handleSuccessfulPayment(session)
-        break
+      case 'customer.deleted':
+        // Handle customer deletion
+        const deletedUser = await prisma.user.findFirst({
+          where: { 
+            customerId: customer.id 
+          }
+        })
 
-      default:
-        console.log(`Unhandled event type: ${event.type}`)
+        if (deletedUser) {
+          await prisma.user.update({
+            where: { id: deletedUser.id },
+            data: {
+              customerId: null,
+              subscriptionId: null,
+              subscriptionStatus: SubscriptionStatus.INACTIVE,
+              subscriptionTier: SubscriptionTier.FREE,
+              remainingCredits: SUBSCRIPTION_CREDITS.FREE,
+            },
+          })
+        }
+        break
     }
 
     return new NextResponse(null, { status: 200 })
   } catch (error) {
-    console.error('Error processing webhook:', error)
-    return new NextResponse('Webhook Error', { status: 500 })
+    console.error('Stripe webhook error:', error)
+    return new NextResponse('Webhook error', { status: 400 })
   }
-}
-
-async function handleSubscriptionChange(session: Stripe.Subscription) {
-  const customerId = session.customer as string
-  const user = await prisma.user.findFirst({
-    where: { customerId }
-  })
-
-  if (!user) {
-    console.error('User not found for customer:', customerId)
-    return
-  }
-
-  // Calculate credits based on plan
-  const baseCredits = session.items.data[0].price.lookup_key?.includes('yearly') ? 10 : 10
-  const freeCredits = 1 // Free tier credits
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      subscriptionId: session.id,
-      subscriptionStatus: session.status === 'active' ? 'ACTIVE' : 'PAST_DUE',
-      subscriptionTier: session.items.data[0].price.lookup_key?.includes('yearly') ? 'YEARLY' : 'PREMIUM',
-      currentPeriodStart: new Date(session.current_period_start * 1000),
-      currentPeriodEnd: new Date(session.current_period_end * 1000),
-      remainingCredits: baseCredits + freeCredits,
-      lastCreditReset: new Date(),
-    }
-  })
-}
-
-async function handleSubscriptionCancellation(session: Stripe.Subscription) {
-  const customerId = session.customer as string
-  const user = await prisma.user.findFirst({
-    where: { customerId }
-  })
-
-  if (!user) return
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      subscriptionStatus: 'CANCELLED',
-      subscriptionTier: 'FREE',
-      remainingCredits: 1, // Reset to free tier credits
-      currentPeriodEnd: null,
-      currentPeriodStart: null,
-      subscriptionId: null,
-    }
-  })
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function handleSuccessfulPayment(session: any) {
-  const customerId = session.customer as string
-  const user = await prisma.user.findFirst({
-    where: { customerId }
-  })
-
-  if (!user) return
-
-  // Create a transaction record
-  await prisma.transaction.create({
-    data: {
-      userId: user.id,
-      amount: session.amount_paid / 100, // Convert from cents
-      currency: session.currency,
-      status: 'success',
-      paymentMethod: session.payment_method_types[0],
-      paymentIntentId: session.payment_intent,
-      tier: user.subscriptionTier,
-    }
-  })
 }
