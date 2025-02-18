@@ -47,12 +47,17 @@ export async function sendEmail({
     );
   }
 
+  // Prepare the email content with recipient name if provided
+  const personalizedContent = recipientName 
+    ? `Dear ${recipientName},<br><br>${content}` 
+    : content;
+
   try {
     const result = await resend.emails.send({
       from: "myproposal.love <contact@myproposal.love>",
       to,
       subject,
-      html: content,
+      html: personalizedContent,
       tags: [{ name: 'type', value: 'transactional' }],
       headers: {
         'X-Entity-Ref-ID': new Date().getTime().toString(),
