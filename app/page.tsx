@@ -223,11 +223,21 @@ export default function Home() {
                 asChild
                 variant="secondary"
                 size="lg"
-                className="bg-white/90 hover:bg-white/70 text-rose-500 backdrop-blur-md shadow-xl transform hover:scale-101 transition-all duration-300 w-full sm:w-auto"
+                className="bg-white/90 hover:bg-white/70 backdrop-blur-md shadow-xl transform hover:scale-101 transition-all duration-300 flex items-center justify-center"
               >
-                <Link href="#how-it-works" className="flex items-center px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg">
-                  <span className="mr-2">✨</span>
-                  See How It Works
+                <Link 
+                  href="https://www.producthunt.com/posts/myproposal-love?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-myproposal&#0045;love" 
+                  target="_blank"
+                  className="flex items-center justify-center w-full md:w-auto p-1"
+                >
+                  <Image 
+                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=889936&theme=light" 
+                    alt="MyProposal.love on Product Hunt"
+                    width={250}
+                    height={54}
+                    className="h-11 md:h-auto hover:opacity-90 transition-opacity"
+                    priority
+                  />
                 </Link>
               </Button>
             </motion.div>
