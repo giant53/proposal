@@ -7,19 +7,31 @@ import { ArrowRight, Heart, Lock, Mail } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
   const [focused, setFocused] = useState<'email' | 'password' | null>(null);
+
+  useEffect(() => {
+    if (session?.user) {
+      setIsRedirecting(true);
+      const redirectTimer = setTimeout(() => {
+        router.push("/dashboard");
+      }, 2000);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [session, router]);
 
   const handleEmailLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -58,36 +70,10 @@ export default function LoginPage() {
     }
   };
 
-  // If user is already logged in, show a special screen
-  if (session?.user) {
+  // Redirecting screen when user is already logged in
+  if (isRedirecting) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-rose-50 to-white flex flex-col items-center justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-        {/* Floating Hearts Background */}
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -100],
-                opacity: [0.3, 0],
-                scale: [1, 0.5],
-              }}
-              transition={{
-                duration: Math.random() * 5 + 3,
-                repeat: Infinity,
-                repeatType: "loop",
-              }}
-            >
-              <Heart className="text-rose-200 w-6 h-6" />
-            </motion.div>
-          ))}
-        </div>
-
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -103,41 +89,19 @@ export default function LoginPage() {
           </motion.div>
 
           <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-pink-600">
-            Welcome Back, {session.user.name?.split(' ')[0] || 'Lover'}!
+            Welcome Back, {session?.user.name?.split(' ')[0] || 'Lover'}!
           </h2>
 
           <p className="text-gray-600 mb-8 text-lg">
-            You&apos;re already logged in and ready to create magical moments.
+            Redirecting to your dashboard...
           </p>
 
-          <div className="flex flex-col space-y-4">
-            <Button
-              asChild
-              className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white group transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
-            >
-              <Link
-                href="/dashboard"
-                className="flex items-center justify-center"
-              >
-                <Heart className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-                View Your Proposals
-              </Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-rose-200 text-rose-600 hover:bg-rose-50 group border-2 transition-all duration-300 ease-in-out transform hover:scale-[1.02]"
-            >
-              <Link
-                href="/proposals/new"
-                className="flex items-center justify-center"
-              >
-                <Heart className="mr-3 h-6 w-6 group-hover:scale-110 transition-transform" />
-                Create New Proposal
-              </Link>
-            </Button>
-          </div>
+          <motion.div
+            initial={{ width: '0%' }}
+            animate={{ width: '100%' }}
+            transition={{ duration: 2, ease: 'linear' }}
+            className="h-1 bg-gradient-to-r from-rose-500 to-pink-600"
+          />
         </motion.div>
       </div>
     );

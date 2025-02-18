@@ -1,24 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-require-imports */
-import nodemailer from "nodemailer";
+import { Resend } from 'resend';
 import twilio from "twilio";
 
-// Initialize email transporter
-const emailTransporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: false, // Use TLS
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: true,
-  },
-});
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-console.log("Email Transporter:", emailTransporter);
-
+// Initialize Twilio
 const twilioClient = twilio(
   process.env.TWILIO_ACCOUNT_SID!,
   process.env.TWILIO_AUTH_TOKEN!
@@ -49,45 +37,30 @@ interface WhatsAppOptions {
 // Email sending function
 export async function sendEmail({
   to, 
-  subject = "A Special Message for You 💝", 
-  content, 
+  subject = "Your Proposal Access", 
+  content,
   recipientName
 }: EmailOptions) {
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+  if (!process.env.RESEND_API_KEY) {
     throw new Error(
-      "Email configuration is missing. Please check your environment variables."
+      "Resend API key is missing. Please check your environment variables."
     );
   }
 
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #e11d48;">A Special Message for ${recipientName}</h2>
-      <div style="white-space: pre-wrap; padding: 20px; background-color: #fff1f2; border-radius: 8px; margin: 20px 0;">
-        ${content}
-      </div>
-      <p style="color: #64748b; font-size: 14px;">
-        This is a special proposal sent via myproposal.love. Please respond with care.
-      </p>
-    </div>
-  `;
-
   try {
-    await emailTransporter.verify(); // Verify connection configuration
-
-    const mailOptions = {
-      from: {
-        name: "Proposal.me",
-        address: process.env.SMTP_FROM || process.env.SMTP_USER,
-      },
+    const result = await resend.emails.send({
+      from: "myproposal.love <contact@myproposal.love>",
       to,
       subject,
-      text: content,
-      html,
-    };
+      html: content,
+      tags: [{ name: 'type', value: 'transactional' }],
+      headers: {
+        'X-Entity-Ref-ID': new Date().getTime().toString(),
+      }
+    });
 
-    const info = await emailTransporter.sendMail(mailOptions);
-    console.log("Email sent: %s", info.messageId);
-    return info;
+    console.log("Email sent via Resend:", result);
+    return result;
   } catch (error) {
     console.error("Error sending email:", error);
     throw error;

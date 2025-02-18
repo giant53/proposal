@@ -17,8 +17,12 @@ import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AcquisitionDialog } from "@/components/acquisition/acquisition-dialog";
 import { AcquisitionBanner } from "@/components/acquisition/acquisition-banner";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [isClient, setIsClient] = useState(false);
   const [_, setActiveTestimonial] = useState(0);
   //const [isHoveredFeature, setIsHoveredFeature] = useState<number | null>(null);
@@ -61,6 +65,14 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [testimonials.length]);
+
+  const handleCreateProposal = () => {
+    if (session?.user) {
+      router.push("/dashboard");
+    } else {
+      router.push("/login");
+    }
+  };
 
   if (!isClient) {
     return (
@@ -200,14 +212,12 @@ export default function Home() {
               transition={{ delay: 0.8 }}
             >
               <Button
-                asChild
+                onClick={handleCreateProposal}
                 size="lg"
                 className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white shadow-xl shadow-rose-500/30 transform hover:scale-101 transition-all duration-300 w-full"
               >
-                <Link href="/login" className="flex items-center px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg">
-                  <Heart className="mr-2 w-5 h-5 animate-pulse fill-current" />
-                  Create Your Proposal
-                </Link>
+                <Heart className="mr-2 w-5 h-5 animate-pulse fill-current" />
+                Create Your Proposal
               </Button>
               <Button
                 asChild
@@ -494,14 +504,12 @@ export default function Home() {
               moment with us. Your journey to &quot;yes&quot; starts here.
             </p>
             <Button
-              asChild
+              onClick={handleCreateProposal}
               size="lg"
               className="bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white shadow-lg shadow-rose-200/50 transform hover:scale-105 transition-all duration-300 rounded-xl"
             >
-              <Link href="/login" className="flex items-center px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg">
-                <Heart className="mr-2 w-5 h-5 fill-current animate-pulse" />
-                Start Your Proposal Journey
-              </Link>
+              <Heart className="mr-2 w-5 h-5 fill-current animate-pulse" />
+              Start Your Proposal Journey
             </Button>
           </motion.div>
         </div>
